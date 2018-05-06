@@ -3,6 +3,7 @@ import pymysql
 from IP import *
 import sys
 
+#数据库的地址，可以自己去看一下
 host = '111.230.249.201'
 port = 3306
 user = 'root'
@@ -71,7 +72,7 @@ def ResetDatabases():
         conn.close()
 
 #---------------Website table-------------------
-#输出所有网页信息
+#输出所有网页信息，包括URL和用户访问的时间
 def ShowAllWeb():
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -85,6 +86,7 @@ def ShowAllWeb():
         m = cursor.fetchone()
     conn.close()
 
+#获取一个网页的信息
 def GetWebsiteInfo(id):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -104,6 +106,7 @@ def InsertWebsiteInfo(url, time):
     conn.commit()
     conn.close()
 
+#删除记录
 def DeleteWebsiteinfo(id):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
