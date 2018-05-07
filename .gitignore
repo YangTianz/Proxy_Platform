@@ -1,4 +1,6 @@
 test.py
+__pycache__/
+*.py[cod]
 .idea/misc.xml
 .idea/modules.xml
 .idea/Proxy_Platform.iml

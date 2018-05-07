@@ -17,10 +17,11 @@ def ShowAllIP():
     cursor = conn.cursor()
     sql = "select * from ipPool;"
     cursor.execute(sql)
+    print("id\tAddress\tPort\tLocation\tLivingTime\tAnonmyous\tCategory")
     m = cursor.fetchone()
     while (m!=None):
         for i in m:
-            print(i, end='  ')
+            print(i, end='\t')
         print()
         m = cursor.fetchone()
     conn.close()
@@ -142,5 +143,57 @@ def ShowAllRT():
         m = cursor.fetchone()
     conn.close()
 
-def InsertA():
-    pass
+#生成一条新纪录，记录指定i对指定网站的响应时间，以及返回信息
+def GenResInfo(URLID, IPID, ResponseTime, Method, StatusCode, Header):
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "insert into ResponseTime (URLid, ip_id, ResponseTime, Method, StatusCode, Header) "
+    sql += "values (%d, %d, %d, '%s', %d, '%s');" \
+        % (URLID, IPID, ResponseTime, Method, StatusCode, Header)
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
+# 根据 网站id 和 ip id 更改响应时间
+def UpdateResTimeByID(URLID, IPID, newtime):
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "update ResponseTime set ResponseTime=%d where URLid=%d and ip_id=%d" \
+        % (newtime, URLID, IPID)
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
+# 根据 网站id 和 ip id 更改网站返回的信息，包括请求方式、状态吗、返回Header
+def UpdateResValueByID(URLID, IPID, Method, StatusCode, Header):
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "update ResponseTime set Method='%s', StatusCode=%d, Header='%s' where URLid=%d and ip_id=%d" \
+        % (Method, StatusCode, Header, URLID, IPID)
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
+def DeleteByID(URLID, IPID):
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "delete from Proxy_Platform.ResponseTime where URLid=%d and ip_id=%d" \
+        % (URLID, IPID)
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
+#输出所有的Response信息
+def ShowAllRes():
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "select * from ResponseTime;"
+    cursor.execute(sql)
+    m = cursor.fetchone()
+    print("id\tURLid\tip_id\tResTime\tMethod\tCode\tHeader\t")
+    while (m!=None):
+        for i in m:
+            print(i, end='\t')
+        print()
+        m = cursor.fetchone()
+    conn.close()
