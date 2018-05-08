@@ -17,3 +17,6 @@ class IP_Queue:#创建可用IP队列
 
     def empty(self):
         return self.__ip_queue.empty()
+
+    def size(self):
+        return self.__ip_queue.qsize()
