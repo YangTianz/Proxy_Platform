@@ -7,7 +7,7 @@ from IP_Queue import *
 from http import cookiejar
 import queue
 from Visit_Main import visit
-
+from queue import Queue
 
 
 
@@ -16,13 +16,15 @@ class Scheduler:
     def __init__(self,url,headers={'User-agent':'Mozilla/5.0'},time_max=1,time_delay=1,request_con=1,session=False):#任务调度
         # url 为访问的地址， headers 为报头， time_max 为每个ip最大访问数， time_delay 为访问间隔, request_con 为任务并发数
 
-        global Queue,count,Max_count,mutex
+        global ipQueue,count,Max_count,mutex,Finish_count,Result_list,Failed_Thread
 
         mutex=threading.Lock()  #计数锁
-        Queue=IP_Queue()  # 初始化可用ip队列
+        ipQueue=IP_Queue()  # 初始化可用ip队列
+        Failed_Thread=Queue()
         count=0          #初始化报错导致切换新ip的计数。连续访问失败三次将会切换新ip
-
+        Finish_count=0
         Max_count= request_con * time_max
+        Result_list=[]
         if(request_con<5):
             Max_count=5 * time_max      #初始化报错最大值
 
@@ -30,70 +32,89 @@ class Scheduler:
             print("error")
             return
 
-        thread_list=[]
+
         for i in range(request_con):
 
             while (True):
                 try:
-                    proxy_ip = Queue.get_ip(block = False)  # 从可用ip队列中取出首ip,取出失败则将sleep几秒
+                    proxy_ip = ipQueue.get_ip(block = False)  # 从可用ip队列中取出首ip,取出失败则将sleep几秒
                     break
                 except queue.Empty:
                     pass
-                time.sleep(3)   #取出失败
+                time.sleep(3)   #取出IP失败
                 if (count >= Max_count):
                     print("shit!")
                     return
-
-            t = threading.Thread(target=Visit_Thread, args=(url, headers, time_max, time_delay, proxy_ip, session))
+            t = threading.Thread(target=Visit_Thread, args=(i,url, headers, time_max, time_delay, proxy_ip, session))
             t.start()
-            thread_list.append(t)
-            
-        for t in thread_list:   #阻塞主进程
-            t.join()
+
+        Thread_count=request_con
+        while(True):
+
+            try:
+                Failed_Thread.get()
+                Thread_count=Thread_count+1
+                while (True):
+                    try:
+                        proxy_ip = ipQueue.get_ip(block=False)  # 从可用ip队列中取出首ip,取出失败则将sleep几秒
+                        break
+                    except queue.Empty:
+                        pass
+                    time.sleep(3)  # 取出IP失败
+                t = threading.Thread(target=Visit_Thread,
+                                     args=(i, url, headers, time_max, time_delay, proxy_ip, session))
+                t.start()
+            except queue.Empty:
+                time.sleep(3)
+            if(Finish_count == request_con):
+                break
+
+
+
         if(count>=Max_count):
             print("shit!")
+        print(Result_list)
 
 
 
 
-def Visit_Thread(url,headers,time_max,time_delay,proxy_ip,session): #任务线程
-    global Queue,count,Max_count
+def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任务线程
+    global count,Max_count,Finish_count,Result_list,Failed_Thread
     i=0
     Wrong = 0
-    cookie=cookiejar.CookieJar()
+    result=cookiejar.CookieJar()
 
     while(i<time_max):
         if not (session):
             cookie = cookiejar.CookieJar()
+        else:
+            if not (len(result)==2):
+                cookie = result
+            else:
+                cookie = result[0]
 
-        cookie=visit(url,headers,proxy_ip,cookie)
+        result=visit(url,headers,proxy_ip,cookie)
 
-        if (cookie==False):
+        if (result==False):
             Wrong=Wrong+1
-
             if (Wrong == 3):
-                WaitTime=time.time()
-                while (True):  # 若队列为空则等待
-
-                    try:
-                        proxy_ip = Queue.get_ip(block=False)
-                        break
-                    except queue.Empty:
-                        pass
-                    time.sleep(3)
-                    if (count >= Max_count) or (time.time() - WaitTime >= 30) :
-                        return
-
                 count = count + 1
-                Wrong = 0
-            cookie=cookiejar.CookieJar()
+                Failed_Thread.put(1)
+                return
+            result=cookiejar.CookieJar()
 
         else:
             Wrong = 0
             i = i + 1
+            Result_list.append(result[1])
+            if(i==time_max):
+                Finish_count=Finish_count+1
+                return
             time.sleep(time_delay)
-        if(count>=Max_count):
+        if(count>=Max_count) and i<time_max:
+            print("thread" + str(index)+ " failed!")
             return
+
 
 
 

@@ -21,17 +21,18 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar()):#单次访问网站
         response_time = time.time()
         Response = opener.open(RequestA) #访问
         response_time = time.time() - response_time #响应时间
-        status = Response.code  #状态码
+        status = str(Response.code)  #状态码
 
     except (ConnectionRefusedError,TimeoutError)as e :
         response_time=-1
         sentence=time.asctime( time.localtime(time.time()) )+" use "+ip+" requested "+url+" failed. "
         print(sentence+" Error is "+ e.message)
         return False
-    except error.URLError:
+    except error.URLError as e:
         sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + url + " failed. "
-        print(sentence+" Error is URLError")
+        print(sentence+"\n"+ str(e.reason))
         return False
-    sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + url + " success. "
+    sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + Response.geturl() + \
+               " success. Status:" + status +". Old url: "+url
     print(sentence)
-    return cookie
+    return [cookie,Response.read()]
