@@ -198,7 +198,9 @@ def ShowAllRes():
         m = cursor.fetchone()
     conn.close()
     
- def GetAvailableIP():#获取可用IP
+def GetAvailableIP():
+    #获取可用IP
+    #由于抓取IP还未完成所以直接返回了ip list样例
 
     return [
         {"https": "58.219.173.18:9797"},
