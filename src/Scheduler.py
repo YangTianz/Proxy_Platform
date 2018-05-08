@@ -2,7 +2,6 @@
 import time
 import re
 import threading
-
 from IP_Queue import *
 from http import cookiejar
 import queue
@@ -16,17 +15,18 @@ class Scheduler:
     def __init__(self,url,headers={'User-agent':'Mozilla/5.0'},time_max=1,time_delay=1,request_con=1,session=False):#任务调度
         # url 为访问的地址， headers 为报头， time_max 为每个ip最大访问数， time_delay 为访问间隔, request_con 为任务并发数
 
-        global ipQueue,count,Max_count,mutex,Finish_count,Result_list,Failed_Thread
+        global ipQueue, count, Max_count, mutex, Finish_count, Result_list, Failed_Thread
 
-        mutex=threading.Lock()  #计数锁
-        ipQueue=IP_Queue()  # 初始化可用ip队列
-        Failed_Thread=Queue()
-        count=0          #初始化报错导致切换新ip的计数。连续访问失败三次将会切换新ip
-        Finish_count=0
-        Max_count= request_con * time_max
-        Result_list=[]
+        mutex = threading.Lock()  # 计数锁
+        ipQueue = IP_Queue()  # 初始化可用ip队列
+        Failed_Thread = Queue()
+        count = [0] # 初始化报错导致切换新ip的计数。连续访问失败三次将会切换新ip
+        Finish_count = [0]
+        Max_count = [request_con * time_max]
+        Result_list = []
+
         if(request_con<5):
-            Max_count=5 * time_max      #初始化报错最大值
+            Max_count[0]=5 * time_max     #初始化报错最大值
 
         if not re.match(r'^https?:/{2}\w.+$', url):  # 若url不合法则返回error
             print("error")
@@ -42,17 +42,18 @@ class Scheduler:
                 except queue.Empty:
                     pass
                 time.sleep(3)   #取出IP失败
-                if (count >= Max_count):
+                if (count[0] >= Max_count[0]):
                     print("shit!")
                     return
-            t = threading.Thread(target=Visit_Thread, args=(i,url, headers, time_max, time_delay, proxy_ip, session))
+            t = threading.Thread(target=Visit_Thread, args=(i+1,url, headers, time_max, time_delay, proxy_ip, session))
             t.start()
 
         Thread_count=request_con
+        waittime = time.time()
         while(True):
 
             try:
-                Failed_Thread.get()
+                Failed_Thread.get(block=False)
                 Thread_count=Thread_count+1
                 while (True):
                     try:
@@ -62,18 +63,22 @@ class Scheduler:
                         pass
                     time.sleep(3)  # 取出IP失败
                 t = threading.Thread(target=Visit_Thread,
-                                     args=(i, url, headers, time_max, time_delay, proxy_ip, session))
+                                     args=(Thread_count, url, headers, time_max, time_delay, proxy_ip, session))
                 t.start()
             except queue.Empty:
-                time.sleep(3)
-            if(Finish_count == request_con):
+                if(time.time()-waittime>=60):
+                    print("I'm alive _(:з」∠)_")
+                    waittime=time.time()
+                time.sleep(10)
+            if(Finish_count[0] >= request_con):
                 break
 
 
 
-        if(count>=Max_count):
+        if(count[0]>=Max_count[0]):
             print("shit!")
-        print(Result_list)
+        for i in Result_list:
+            print(i)
 
 
 
@@ -98,8 +103,9 @@ def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任�
         if (result==False):
             Wrong=Wrong+1
             if (Wrong == 3):
-                count = count + 1
+                count[0] = count[0] + 1
                 Failed_Thread.put(1)
+                print("thread " + str(index) + " failed!")
                 return
             result=cookiejar.CookieJar()
 
@@ -108,10 +114,10 @@ def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任�
             i = i + 1
             Result_list.append(result[1])
             if(i==time_max):
-                Finish_count=Finish_count+1
+                Finish_count[0]=Finish_count[0]+1
                 return
             time.sleep(time_delay)
-        if(count>=Max_count) and i<time_max:
+        if(count[0]>=Max_count[0]) and i<time_max:
             print("thread" + str(index)+ " failed!")
             return
 

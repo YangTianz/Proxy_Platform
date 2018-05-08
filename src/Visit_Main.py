@@ -23,11 +23,7 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar()):#单次访问网站
         response_time = time.time() - response_time #响应时间
         status = str(Response.code)  #状态码
 
-    except (ConnectionRefusedError,TimeoutError)as e :
-        response_time=-1
-        sentence=time.asctime( time.localtime(time.time()) )+" use "+ip+" requested "+url+" failed. "
-        print(sentence+" Error is "+ e.message)
-        return False
+
     except error.URLError as e:
         sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + url + " failed. "
         print(sentence+"\n"+ str(e.reason))
