@@ -82,7 +82,6 @@ def Visit_Thread(url,headers,time_max,time_delay,proxy_ip,session): #任务线�
                         pass
                     time.sleep(3)
                     if (count >= Max_count) or (time.time() - WaitTime >= 30) :
-                        print("return")
                         return
 
                 count = count + 1
@@ -94,9 +93,7 @@ def Visit_Thread(url,headers,time_max,time_delay,proxy_ip,session): #任务线�
             i = i + 1
             time.sleep(time_delay)
         if(count>=Max_count):
-            print("return")
             return
-    print("success")
 
 
 

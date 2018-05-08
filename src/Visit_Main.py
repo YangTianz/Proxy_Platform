@@ -27,7 +27,6 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar()):#单次访问网站
         response_time=-1
         sentence=time.asctime( time.localtime(time.time()) )+" use "+ip+" requested "+url+" failed. "
         print(sentence+" Error is "+ e.message)
-
         return False
     except error.URLError:
         sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + url + " failed. "
