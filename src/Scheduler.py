@@ -84,7 +84,7 @@ class Scheduler:
 
 
 def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任务线程
-    global count,Max_count,Finish_count,Result_list,Failed_Thread
+    global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex
     i=0
     Wrong = 0
     result=cookiejar.CookieJar()
@@ -103,8 +103,10 @@ def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任�
         if (result==False):
             Wrong=Wrong+1
             if (Wrong == 3):
+                mutex.acquire()
                 count[0] = count[0] + 1
                 Failed_Thread.put(1)
+                mutex.release()
                 print("thread " + str(index) + " failed!")
                 return
             result=cookiejar.CookieJar()
@@ -112,9 +114,16 @@ def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任�
         else:
             Wrong = 0
             i = i + 1
+
+            mutex.acquire()
+            Result_list.append(proxy_ip)
             Result_list.append(result[1])
+            mutex.release()
+
             if(i==time_max):
+                mutex.acquire()
                 Finish_count[0]=Finish_count[0]+1
+                mutex.release()
                 return
             time.sleep(time_delay)
         if(count[0]>=Max_count[0]) and i<time_max:
