@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 from http import cookiejar
 from urllib import request,error
 import time
