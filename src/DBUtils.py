@@ -198,11 +198,11 @@ def ShowAllRes():
         m = cursor.fetchone()
     conn.close()
     
-def GetAvailableIP():
-    #获取可用IP
+def GetAvailableIP(size):
+    #获取可用IP,添加了一个size参数，返回相应大小的ip list
     #由于抓取IP还未完成所以直接返回了ip list样例
 
-    return [
+    list= [
         {"https": "116.19.98.249:9797"},
         {"https": "14.29.47.90:3128"},
         {"https": "139.227.252.141:8118"},
@@ -224,3 +224,8 @@ def GetAvailableIP():
         {"https": "124.237.83.14:53281"},
         {"https": "122.72.18.35:80"}
     ]
+    list1=[]
+    for i in range(size):
+        list1.append(list[i])
+
+    return list1

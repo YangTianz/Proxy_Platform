@@ -3,11 +3,12 @@
 from http import cookiejar
 from urllib import request,error
 import time
+import socket
 import DBUtils
 
 
-def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar()):#单次访问网站
-
+def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20):#单次访问网站
+    socket.setdefaulttimeout(timeout)
     for key in proxy_ip:
         ip = proxy_ip[key]
     try:
@@ -24,6 +25,7 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar()):#单次访问网站
         Response = opener.open(RequestA) #访问
         response_time = time.time() - response_time #响应时间
         status = str(Response.code)  #状态码
+        response_header = Response.info()   #返回header
 
 
     except error.URLError as e:

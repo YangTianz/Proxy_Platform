@@ -18,7 +18,7 @@ class Scheduler:
         global ipQueue, count, Max_count, mutex, Finish_count, Result_list, Failed_Thread
 
         mutex = threading.Lock()  # 计数锁
-        ipQueue = IP_Queue()  # 初始化可用ip队列
+
         Failed_Thread = Queue()
         count = [0] # 初始化报错导致切换新ip的计数。连续访问失败三次将会切换新ip
         Finish_count = [0]
@@ -27,6 +27,8 @@ class Scheduler:
 
         if(request_con<5):
             Max_count[0]=5 * time_max     #初始化报错最大值
+
+        ipQueue = IP_Queue(Max_count[0])  # 初始化可用ip队列
 
         if not re.match(r'^https?:/{2}\w.+$', url):  # 若url不合法则返回error
             print("error")
@@ -78,7 +80,8 @@ class Scheduler:
         if(count[0]>=Max_count[0]):
             print("shit!")
         for i in Result_list:
-            print(i)
+            print(i.decode())
+        return Result_list
 
 
 
@@ -116,7 +119,6 @@ def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任�
             i = i + 1
 
             mutex.acquire()
-            Result_list.append(proxy_ip)
             Result_list.append(result[1])
             mutex.release()
 
