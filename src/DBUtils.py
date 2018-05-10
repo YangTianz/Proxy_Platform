@@ -236,4 +236,19 @@ def getAvailableIP():
         {"https": "122.72.18.34:80"}
     ]
 
-def get
+# 从数据库里随机取10个IP
+def getIPs(n):
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "select * from ipPool order by rand() LIMIT %d" % n
+    cursor.execute(sql)
+    list = []
+    m = cursor.fetchone()
+    while m:
+        a = IP(m[1], m[2])
+        a.setLocation(m[3])
+        a.setAnon(m[5])
+        a.setCategory(m[6])
+        list.append(a)
+        m = cursor.fetchone()
+    return list
