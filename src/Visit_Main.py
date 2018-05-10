@@ -4,7 +4,6 @@ from http import cookiejar
 from urllib import request,error
 import time
 import socket
-import DBUtils
 
 
 def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20):#单次访问网站

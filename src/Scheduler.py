@@ -77,12 +77,14 @@ class Scheduler:
 
 
 
+
         if(count[0]>=Max_count[0]):
             print("shit!")
-        for i in Result_list:
-            print(i.decode())
-        return Result_list
 
+
+    def get_result(self):
+        global Result_list
+        return Result_list
 
 
 
