@@ -7,7 +7,7 @@
 """
 
 # 利用一个正则就可以直接采集代理IP的站点
-PROXY_SITES_BY_REGX = {
+HTTP_PROXY_SITES_BY_REGX = {
     'urls': [
         'http://ab57.ru/downloads/proxyold.txt',
         'http://www.proxylists.net/http_highanon.txt',
@@ -22,7 +22,7 @@ PROXY_SITES_BY_REGX = {
         'http://www.proxylists.net/?HTTP',
         'http://uks.pl.ua/script/getproxy.php?last'
     ],
-    'proxy_regx': r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,4}"   
+    'proxy_regx': r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,4}"
 }
 
 # 需要利用xpath 定位代理IP 的站点
@@ -30,12 +30,14 @@ PROXY_SITES_BY_XPATH = [
     {
         'urls': ['http://www.66ip.cn/%s.html' % page for page in ['index'] + list(range(2, 11))],
         'ip_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[1]/text()",
-        'port_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[2]/text()" 
+        'port_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[2]/text()",
+        'Category': 'HTTP'
     },
     {
         'urls': ['http://www.mimiip.com/gngao/%s' % page for page in range(2, 10)],
         'ip_xpath': ".//table[@class='list']/tbody/tr/td[1]/text()",
-        'port_xpath': ".//table[@class='list']/tbody/tr/td[2]/text()"
+        'port_xpath': ".//table[@class='list']/tbody/tr/td[2]/text()",
+        'Category': 'HTTP'
     }
     # },
     # {
@@ -44,11 +46,6 @@ PROXY_SITES_BY_XPATH = [
     #     'port_xpath': ".//div[@class='row']/div[3]/table/tbody/tr[position()>1]/td[2]/text()"
     # }
 ]
-
-CHECK_PROXY_XPATH = {
-    "HTTP_VIA": ".//li[@class='proxdata'][1]/span/text()", 
-    "HTTP_X_FORWARDED_FOR": ".//li[@class='proxdata'][2]/span/text()"
-}
 
 # 代理输出位置
 GOOD_OUTPUT_FILE = "proxy_list_good.txt"

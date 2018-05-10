@@ -5,6 +5,7 @@
 
 """
 run_spider():抓取并测试代理ip是否可以使用 抓取、测试网址均在config.py中设置
+运行时创建一个线程用于抓取ip，其他50个线程用于检测ip可用性，结束后通过总线程写入
 直接运行此文件将运行run_spider()
 """
 from DBUtils import insertIPinfo
@@ -18,26 +19,27 @@ import threading
 import time
 
 from proxy_spider.config import (
-    PROXY_SITES_BY_REGX, PROXY_SITES_BY_XPATH, GOOD_OUTPUT_FILE, BAD_OUTPUT_FILE, USER_AGENT_LIST, RETRY_NUM, TIME_OUT, TEST_URL
+    HTTP_PROXY_SITES_BY_REGX, PROXY_SITES_BY_XPATH, GOOD_OUTPUT_FILE, BAD_OUTPUT_FILE,
+    USER_AGENT_LIST, RETRY_NUM, TIME_OUT, TEST_URL
 )   
 
 
-class Proxy(object):
-    def __init__(self, ip_port, anonymity_level, proxy_type='HTTP'):
-        self.ip_port = ip_port
-        self.proxy_type = proxy_type
-        self.anonymity_level = anonymity_level
-
-    def __eq__(self, other):  
-        if isinstance(other, Proxy):  
-            return ((self.ip_port == other.ip_port)
-                    and (self.proxy_type == other.proxy_type)
-                    and (self.anonymity_level == other.anonymity_level))
-        else:  
-            return False  
-      
-    def __hash__(self):  
-        return hash(self.ip_port + " " + self.proxy_type + " " + self.anonymity_level) 
+# class Proxy(object):
+#     def __init__(self, ip_port, anonymity_level, proxy_type='HTTP'):
+#         self.ip_port = ip_port
+#         self.proxy_type = proxy_type
+#         self.anonymity_level = anonymity_level
+#
+#     def __eq__(self, other):
+#         if isinstance(other, Proxy):
+#             return ((self.ip_port == other.ip_port)
+#                     and (self.proxy_type == other.proxy_type)
+#                     and (self.anonymity_level == other.anonymity_level))
+#         else:
+#             return False
+#
+#     def __hash__(self):
+#         return hash(self.ip_port + " " + self.proxy_type + " " + self.anonymity_level)
 
 
 class ProxySpider(object):
@@ -57,26 +59,26 @@ class ProxySpider(object):
         根据正则直接获取代理IP 部分
         :return:
         """
-        for site in PROXY_SITES_BY_REGX['urls']:
+        for site in HTTP_PROXY_SITES_BY_REGX['urls']:
             resp = self._fetch(site)
             if resp is not None and resp.status_code == 200:
                 try:
                     proxy_list = self._extract_by_regx(resp)
                     for proxy in proxy_list:
-                        print("Get proxy %s and get into queue" % (proxy))
-                        self.proxy_queue.put(proxy)
+                        print("Get proxy %s and get into queue" % proxy)
+                        self.proxy_queue.put((proxy, 'HTTP'))
                 except Exception as e:
                     continue
         '''根据xpath 获取代理IP 部分'''
         for sites in PROXY_SITES_BY_XPATH:
             for site in sites['urls']:
-                resp  = self._fetch(site)
+                resp = self._fetch(site)
                 if resp is not None and resp.status_code == 200:
                     try:
                         proxy_list = self._extract_by_xpath(resp, sites['ip_xpath'], sites['port_xpath'])
                         for proxy in proxy_list:
-                            print("Get proxy %s and get into queue" % (proxy))
-                            self.proxy_queue.put(proxy)
+                            print("Get proxy %s and get into queue" % proxy)
+                            self.proxy_queue.put((proxy, sites['Category']))
                     except Exception as e:
                         continue                  
         print("Get all proxy in queue!")
@@ -88,7 +90,7 @@ class ProxySpider(object):
 
         while not self.fetch_finish:
             try:
-                proxy = self.proxy_queue.get(timeout=1)
+                proxy, category = self.proxy_queue.get(timeout=1)
                 # self._deduplicate_proxy(proxy)
                 print("get proxy from queue")
                 print(proxy)
@@ -96,7 +98,9 @@ class ProxySpider(object):
                 # check_proxy = proxy
                 ip_address, port = proxy.split(':')
                 proxy_instance = IP(ip_address, int(port))
-                proxy_instance.setCategory('html')
+                proxy_instance.setCategory(category)
+                proxy_instance.setAnon(-1)
+                proxy_instance.setLocation('UNKNOWN')
                 if check_proxy is not None and check_proxy.status_code == 200:
                     # resp_str = html.fromstring(check_proxy.text)
                     # http_via = resp_str.xpath(CHECK_PROXY_XPATH['HTTP_VIA'])
@@ -145,7 +149,7 @@ class ProxySpider(object):
     def _extract_by_regx(self, resp):
         proxy_list = []
         if resp is not None:
-            proxy_list = re.findall(PROXY_SITES_BY_REGX['proxy_regx'], resp.text)
+            proxy_list = re.findall(HTTP_PROXY_SITES_BY_REGX['proxy_regx'], resp.text)
         return proxy_list
 
     def _extract_by_xpath(self, resp, ip_xpath, port_xpath):
@@ -174,17 +178,17 @@ class ProxySpider(object):
     """ 持久化可用代理IP """
     def output_proxy(self):
         with open('../'+GOOD_OUTPUT_FILE, "w+") as proxy_file:
-            proxy_file.write("%30s%30s%30s" % ('IP', 'Port', 'Type'))
+            proxy_file.write("%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type'))
             for proxy in self.good_proxy:
-                print("Write %sto proxy_list_good.txt" % proxy.getAddress())
-                proxy_file.write('%30s%30s%30s\n' % (proxy.getAddress(), proxy.getPort(), proxy.getCategory()))
+                print("Write %s to proxy_list_good.txt\n" % proxy.getAddress())
+                proxy_file.write('%-30s%-30s%-30s\n' % (proxy.getAddress(), proxy.getPort(), proxy.getCategory()))
                 insertIPinfo(proxy)
 
         with open('../'+BAD_OUTPUT_FILE, "w+") as proxy_file:
-            proxy_file.write("%30s%30s%30s" % ('IP', 'Port', 'Type'))
+            proxy_file.write("%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type'))
             for proxy in self.bad_proxy:
-                print("Write %sto proxy_list_bad.txt" % proxy.getAddress())
-                proxy_file.write('%30s%30s%30s\n' % (proxy.getAddress(), proxy.getPort(), proxy.getCategory()))
+                print("Write %s to proxy_list_bad.txt\n" % proxy.getAddress())
+                proxy_file.write('%-30s%-30s%-30s\n' % (proxy.getAddress(), proxy.getPort(), proxy.getCategory()))
 
     """一个线程用于抓取，多个线程用于测试"""
     def run(self):       
@@ -203,10 +207,6 @@ class ProxySpider(object):
 def run_spider():
     spider = ProxySpider()
     spider.run()
-    # print("fetch is over, begin to upload!!!!!!")
-    """上述任务执行完成后，上传结果到七牛,注意在上传之前先要配置七牛的认证"""
-    #uploadtoqiniu = qiniuupload.uploadToqiniu()
-    #uploadtoqiniu.upload() 
 
 
 if __name__ == "__main__":
