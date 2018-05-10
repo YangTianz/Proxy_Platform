@@ -89,7 +89,7 @@ def getIPID(Address, Port):
     cursor.execute(sql)
     m = cursor.fetchone()
     conn.close()
-    return m[0]
+    return int(m[0])
 
 #---------------Website table-------------------
 #输出所有网页信息，包括URL和用户访问的时间
@@ -128,7 +128,7 @@ def insertWebsiteInfo(url):
     cursor.execute(sql)
     m = cursor.fetchone()
     conn.close()
-    return m[0]
+    return int(m[0])
 
 # 删除记录
 def deleteWebsiteinfo(id):
@@ -229,25 +229,7 @@ def getidByURL(url):
     cursor.execute(sql)
     m = cursor.fetchone()
     conn.close()
-    return m[0]
-
-def getAvailableIP():
-    # 获取可用IP
-    # 由于抓取IP还未完成所以直接返回了ip list样例
-
-    return [
-        {"https": "58.219.173.18:9797"},
-        {"https": "219.79.226.5:9064"},
-        {"https": "121.201.33.100:16448"},
-        {"https": "14.29.47.90:3128"},
-        {"https": "116.19.98.249:9797"},
-        {"https": "139.227.252.141:8118"},
-        {"https": "183.159.82.123:18118"},
-        {"https": "101.27.20.7:61234"},
-        {"https": "27.209.165.14:61234"},
-        {"https": "182.202.220.23:61234"},
-        {"https": "122.72.18.34:80"}
-    ]
+    return int(m[0])
 
 # 从数据库里随机取10个IP
 def getIPs(n):
