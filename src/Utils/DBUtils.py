@@ -60,12 +60,15 @@ def showAllIP():
     cursor.execute(sql)
     print("id\tAddress\tPort\tLocation\tLivingTime\tAnonmyous\tCategory")
     m = cursor.fetchone()
+    ip_list=[]
     while (m!=None):
-        for i in m:
-            print(i, end='\t')
-        print()
+        Address=m[1]
+        port=m[2]
+        ip=Address+":"+str(port)
+        ip_list.append(ip)
         m = cursor.fetchone()
     conn.close()
+    return ip_list
 
 # 输入一个IP的id，返回一个IP类
 def getIPInfo(id):

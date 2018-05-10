@@ -5,7 +5,7 @@ from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
 
 
-run_spider()
+run_spider()    #启动爬虫爬可用IP
 
 app=Flask(__name__)
 
