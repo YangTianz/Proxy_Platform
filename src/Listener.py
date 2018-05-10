@@ -2,6 +2,10 @@
 
 from flask import Flask, request
 from Schedule.Scheduler import *
+from  proxy_spider.proxyspider import run_spider
+
+
+run_spider()
 
 app=Flask(__name__)
 

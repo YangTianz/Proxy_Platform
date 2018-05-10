@@ -63,8 +63,8 @@ FIX_PROXY_SITES_BY_XPATH = [
 ]
 
 # 代理输出位置
-GOOD_OUTPUT_FILE = "./proxy_spider/file/proxy_list_good.txt"
-BAD_OUTPUT_FILE = './proxy_spider/file/proxy_list_bad.txt'
+GOOD_OUTPUT_FILE = "proxy_spider/file/proxy_list_good.txt"
+BAD_OUTPUT_FILE = 'proxy_spider/file/proxy_list_bad.txt'
 
 
 # User-Agent list
