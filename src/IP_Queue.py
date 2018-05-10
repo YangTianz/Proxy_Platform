@@ -7,7 +7,7 @@ class IP_Queue:#创建可用IP队列
 
     def __init__(self,size):
         self.__ip_queue=Queue()
-        ip_list=DBUtils.GetAvailableIP(size)
+        ip_list=DBUtils.getAvailableIP()
         for ip in ip_list:
             self.__ip_queue.put(ip)
 
