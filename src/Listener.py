@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 
 from flask import Flask, request
-from Scheduler import *
+from Schedule.Scheduler import *
 
 app=Flask(__name__)
 

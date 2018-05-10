@@ -8,6 +8,7 @@ from http import cookiejar
 import queue
 from Schedule.Visit_Main import visit
 from queue import Queue
+from urllib import parse
 
 
 
@@ -44,6 +45,8 @@ class Scheduler:
             except ValueError:
                 Result_list.append("data的JSON格式错误")
                 return None
+
+        DBUtils.insertWebsiteInfo(getURL(url))
 
 
         Result_list.append("No error")
@@ -153,3 +156,8 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
 
 
 
+def getURL(url):
+    headurl = parse.urlparse(url).scheme
+    newurl = parse.urlparse(url).netloc
+    url = headurl + "://" + newurl
+    return url
