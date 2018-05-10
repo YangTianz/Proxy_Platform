@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
-import pymysql
 from IP import *
-import sys
+import time
+import pymysql
 
 #数据库的地址，可以自己去看一下
 host = '111.230.249.201'
 port = 3306
-user = 'root'
+user = 'test'
 passwd = 'Sustech15'
 db = 'Proxy_Platform'
 
@@ -107,12 +107,12 @@ def getWebsiteInfo(id):
     conn.close()
     return m
 
-# 生成一个新的Website数据，需要输入 URL 和 当前时间   time.asctime()
-def insertWebsiteInfo(url, time):
+# 生成一个新的Website数据，只需要输入 URL，时间会自动生成
+def insertWebsiteInfo(url):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
     sql = "insert into Websites (URL, Time) values ('%s', '%s');" \
-          % (url , time)
+          % (url , time.asctime())
     cursor.execute(sql)
     conn.commit()
     conn.close()
@@ -261,9 +261,3 @@ def getIPs(n):
 
     return list
 
-"""
-select *   
-from ipPool as t1 join (select round(rand() * ((select max(idIP) from ipPool)-(slect min(idIP) from ipPool))+(select min(idIP) from ipPool)) as id) as t2   
-where t1.id >= t2.id   
-order by t1.id limit 1; 
-"""
