@@ -18,7 +18,7 @@ class Scheduler:
         # url 为访问的地址， headers 为报头， time_max 为每个ip最大访问数， time_delay 为访问间隔, request_con 为任务并发数,
         #  session为连续ip访问功能，将返回使用的ip和cookies和访问数据
 
-        global ipQueue, count, Max_count, mutex, Finish_count, Result_list, Failed_Thread
+        global ipQueue, count, Max_count, mutex, Finish_count, Result_list, Failed_Thread,Session
 
         mutex = threading.Lock()  # 计数锁
 
@@ -27,6 +27,7 @@ class Scheduler:
         Finish_count = [0]
         Max_count = [request_con * time_max]
         Result_list = []
+        Session=session
 
         if(request_con<5):
             Max_count[0]=5 * time_max     #初始化报错最大值
@@ -39,10 +40,13 @@ class Scheduler:
             return None
         if(data!=None):
             try:
-                data=json.loads(data)
+                json.loads(data)
             except ValueError:
                 Result_list.append("data的JSON格式错误")
                 return None
+
+
+        Result_list.append("No error")
 
 
         for i in range(request_con):
@@ -93,6 +97,10 @@ class Scheduler:
     def get_result(self):
         global Result_list
         return Result_list
+    def get_session(self):
+        global Session
+        return Session
+
 
 
 

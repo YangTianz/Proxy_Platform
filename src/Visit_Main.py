@@ -25,7 +25,7 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
             if(data==None):
                 RequestA = request.Request(url)
             else:
-                RequestA = request.Request(url,data)
+                RequestA = request.Request(url,data=data)
 
         for key in headers.keys():
             RequestA.add_header(key,headers[key])    #添加报文头部
@@ -44,4 +44,4 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
     sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + Response.geturl() + \
                " success. Status:" + status +". Old url: "+url
     print(sentence)
-    return Response.read()
+    return Response.read().decode()
