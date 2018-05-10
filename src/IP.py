@@ -18,6 +18,17 @@ class IP:
     def getPort(self):
         return self.__port
 
+    # 显示IP的信息
+    def show(self):
+        mes = "IP Address: %s, Port: %d" % (self.__address, self.__port)
+        if self.__location!="":
+            mes += ", Location: %s" % self.__location
+        if self.__isAnon!=-1:
+            mes += ", isAnonmyous: %s" % (self.__isAnon==1)
+        if self.__categ != "":
+            mes += ", Category: %s" % self.__categ
+        print(mes)
+
 #以下为IP类的三个不必要属性，IP的地理位置、IP的类型（HTTP/HTTPS）、是否匿名
     def setLocation(self, loc):
         self.__location = loc

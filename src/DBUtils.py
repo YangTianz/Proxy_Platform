@@ -33,13 +33,15 @@ def getIPInfo(id):
     sql = "select * from ipPool where idIP=%d;" % id
     cursor.execute(sql)
     m = cursor.fetchone()
-    print(m)
     conn.close()
-    a = IP(m[1],m[2])
-    a.setLocation(m[3])
-    a.setAnon(m[5])
-    a.setCategory(m[6])
-    return a
+    if m!=None:
+        a = IP(m[1],m[2])
+        a.setLocation(m[3])
+        a.setAnon(m[5])
+        a.setCategory(m[6])
+        return a
+    else:
+        return
 
 # 输入一个IP的id，在数据库中删除这个IP的信息
 def deleteIPinfo(id):
@@ -54,11 +56,18 @@ def deleteIPinfo(id):
 def insertIPinfo(IP):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
-    sql = "insert into ipPool (Address, Port, Location, IsAnon, Categ) values ('%s', %d, '%s', %d, '%s');" \
-          % (IP.getAddress(), IP.getPort(), IP.getLocation(), IP.getAnon(), IP.getCategory())
+    sql = "select * from ipPool where Address='%s' and Port=%d " % (IP.getAddress() , IP.getPort())
     cursor.execute(sql)
-    conn.commit()
+    m = cursor.fetchone()
+    if m==None:
+        sql = "insert into ipPool (Address, Port, Location, IsAnon, Categ) values ('%s', %d, '%s', %d, '%s');" \
+              % (IP.getAddress(), IP.getPort(), IP.getLocation(), IP.getAnon(), IP.getCategory())
+        cursor.execute(sql)
+        conn.commit()
+    else:
+        pass
     conn.close()
+
 
 # 清空数据库 ipPool
 def resetDatabases():
@@ -107,7 +116,7 @@ def getWebsiteInfo(id):
     conn.close()
     return m
 
-# 生成一个新的Website数据，只需要输入 URL，时间会自动生成
+# 生成一个新的Website数据，只需要输入 URL，时间会自动生成 , 随后返回网站id
 def insertWebsiteInfo(url):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -115,7 +124,11 @@ def insertWebsiteInfo(url):
           % (url , time.asctime())
     cursor.execute(sql)
     conn.commit()
+    sql = "select idWebsites from Websites where URL='%s'" % url
+    cursor.execute(sql)
+    m = cursor.fetchone()
     conn.close()
+    return m[0]
 
 # 删除记录
 def deleteWebsiteinfo(id):
@@ -164,7 +177,7 @@ def genResInfo(URLID, IPID, ResponseTime, Method, StatusCode, Header):
     conn.commit()
     conn.close()
 
-# 根据 网站id 和 ip id 更改响应时间
+# 根据 网站id 和  更改响应时间
 def updateResTimeByID(URLID, IPID, newtime):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
