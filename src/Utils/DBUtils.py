@@ -58,17 +58,27 @@ def showAllIP():
     cursor = conn.cursor()
     sql = "select * from ipPool;"
     cursor.execute(sql)
-    print("id\tAddress\tPort\tLocation\tLivingTime\tAnonmyous\tCategory")
     m = cursor.fetchone()
     ip_list=[]
     while (m!=None):
         Address=m[1]
-        port=m[2]
-        ip=Address+":"+str(port)
+        Port=m[2]
+        ip=Address+":"+str(Port)
         ip_list.append(ip)
         m = cursor.fetchone()
     conn.close()
     return ip_list
+
+def changeIP_AN(Anonmyous,Address,port):
+    id = getIPID(Address, int(port))
+
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql="update ipPool set IsAnon='%d' where idIP=%d" % (Anonmyous, id)
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
 
 # 输入一个IP的id，返回一个IP类
 def getIPInfo(id):

@@ -11,18 +11,55 @@ app=Flask(__name__)
 
 @app.route('/api/')
 def listener():
-    url=request.args.get('url')
-    time_max=int(request.args.get('time_max'))
-    headers=""
-    method=""
-    data=""
-    time_delay=float(request.args.get('time_delay'))
-    request_con=int(request.args.get('request_con'))
-    session=False
-    cookie=""
-    timeout=""
+    try:
+        url=request.args.get('url')
+    except:
+        return "No url!"
+    try:
+        time_max=int(request.args.get('time_max'))
+    except:
+        time_max=""
+    try:
+        headers = request.args.get('headers')
+    except:
+        headers=""
+    try:
+        method=request.args.get('get')
+    except:
+        method =""
+    try:
+        data=request.args.get('data')
+    except:
+        data=""
+    try:
+        time_delay=float(request.args.get('time_delay'))
+    except Exception as e:
+        print(e.message)
+        time_delay=""
+    try:
+        request_con=int(request.args.get('request_con'))
+    except:
+        request_con=""
+    try:
+        session=request.args.get('session')
+        if(session=="True"):
+            session=True
+        elif(session=="False"):
+            session=False
+        else:
+            return "Error with session"
+    except:
+        session=""
+    try:
+        cookies=request.args.get('cookies')
+    except:
+        cookies=""
+    try:
+        timeout=request.args.get('cookies')
+    except:
+        timeout=""
 
-    result=get_result(url,headers,method,data,time_max,time_delay,request_con,session,timeout,cookie)
+    result=get_result(url,headers,method,data,time_max,time_delay,request_con,session,timeout,cookies)
     return result
 
 
