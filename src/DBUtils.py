@@ -240,15 +240,30 @@ def getAvailableIP():
 def getIPs(n):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
-    sql = "select * from ipPool order by rand() LIMIT %d" % n
-    cursor.execute(sql)
     list = []
-    m = cursor.fetchone()
-    while m:
+    for i in range(n):
+        # sql = "select * from ipPool order by rand() LIMIT %d" Method 1效率太低
+        #sql = r"select * from ipPool where idIP>="\  Method 2 not precise
+        #    +"((select max(idIP) from ipPool) - 1 - (select min(idIP) from ipPool))* RAND() + (select min(idIP) from ipPool) limit 3"
+        sql = """
+        select *   
+        from ipPool as t1 join (select round(rand() * ((select max(idIP) from ipPool)-(select min(idIP) from ipPool))+(select min(idIP) from ipPool)) as id) as t2   
+        where t1.idIP >= t2.id   
+        order by t1.idIP limit 1; 
+        """
+        cursor.execute(sql)
+        m = cursor.fetchone()
         a = IP(m[1], m[2])
         a.setLocation(m[3])
         a.setAnon(m[5])
         a.setCategory(m[6])
         list.append(a)
-        m = cursor.fetchone()
+
     return list
+
+"""
+select *   
+from ipPool as t1 join (select round(rand() * ((select max(idIP) from ipPool)-(slect min(idIP) from ipPool))+(select min(idIP) from ipPool)) as id) as t2   
+where t1.id >= t2.id   
+order by t1.id limit 1; 
+"""
