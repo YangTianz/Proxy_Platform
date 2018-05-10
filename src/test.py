@@ -1,9 +1,17 @@
 # -*- coding: UTF-8 -*-
 
 from Scheduler import *
+from urllib import parse
 
 
 if __name__ == '__main__' :
+      url="http://www.baidu.com/wwww"
+      headurl = parse.urlparse(url).scheme
+      newurl = parse.urlparse(url).netloc
+      url = headurl + "://" + newurl
+      print(url)
+
+'''
    result=Scheduler("http://www.baidu.com",time_max=1,time_delay=2,request_con=1,session=True) #访问的方法
    #参数为： URL 网址， time_max 为 每个ip最大访问量 ， time_delay 为 每次访问间隔 ， request_con 为 任务并发数 ， session 为 Session功能
    result_list = result.get_result()
@@ -40,6 +48,7 @@ if __name__ == '__main__' :
          number = number + 1
       response_list = response_list + "]]]]]}"
       Result = {"response": response_list}
+'''
 
 
 

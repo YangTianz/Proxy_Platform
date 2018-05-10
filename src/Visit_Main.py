@@ -4,12 +4,16 @@ from http import cookiejar
 from urllib import request,error,parse
 import time
 import socket
+import DBUtils
 
 
 def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="get",data=None):#单次访问网站
     socket.setdefaulttimeout(timeout)
     for key in proxy_ip:
         ip = proxy_ip[key]
+        array=ip.split(":")
+        address=array[0]
+        port=int(array[1])
     try:
         proxy_handler = request.ProxyHandler(proxy_ip)  #创建代理处理器
         cookie_handler = request.HTTPCookieProcessor(cookie)    #创建cookie处理器
@@ -35,6 +39,11 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
         response_time = time.time() - response_time #响应时间
         status = str(Response.code)  #状态码
         response_header = Response.info()   #返回header
+        webid=DBUtils.getidByURL(getURL(url))   #返回网址id
+        ipid=DBUtils.getIPID(address,port)  #返回ip id
+
+        DBUtils.genResInfo(webid,ipid,response_time,method,status,response_header)
+
 
 
     except error.URLError as e:
@@ -45,3 +54,10 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
                " success. Status:" + status +". Old url: "+url
     print(sentence)
     return Response.read().decode()
+
+def getURL(url):
+    url = "http://www.baidu.com/wwww"
+    headurl = parse.urlparse(url).scheme
+    newurl = parse.urlparse(url).netloc
+    url = headurl + "://" + newurl
+    return url

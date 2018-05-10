@@ -8,13 +8,13 @@ app=Flask(__name__)
 @app.route('/api/')
 def listener():
     url=request.args.get('url')
-    time_max=""
+    time_max=int(request.args.get('time_max'))
     headers=""
     method=""
     data=""
-    time_delay=""
-    request_con=2
-    session=True
+    time_delay=float(request.args.get('time_delay'))
+    request_con=int(request.args.get('request_con'))
+    session=False
     cookie=""
     timeout=""
 
