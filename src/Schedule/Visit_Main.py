@@ -4,7 +4,7 @@ from http import cookiejar
 from urllib import request,error,parse
 import time
 import socket
-import DBUtils
+from Utils import DBUtils
 
 
 def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="get",data=None):#单次访问网站
@@ -39,10 +39,10 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
         response_time = time.time() - response_time #响应时间
         status = str(Response.code)  #状态码
         response_header = Response.info()   #返回header
-        webid=int(DBUtils.getidByURL(getURL(url)) )  #返回网址id
-        ipid=int(DBUtils.getIPID(address,port))  #返回ip id
+        webid=int(DBUtils.getidByURL(getURL(url)))  #返回网址id
+        ipid=int(DBUtils.getIPID(address, port))  #返回ip id
 
-        DBUtils.genResInfo(webid,ipid,int(response_time),method,int(status),response_header)
+        DBUtils.genResInfo(webid, ipid, int(response_time), method, int(status), response_header)
 
 
 
