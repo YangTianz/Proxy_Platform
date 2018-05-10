@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 
 from http import cookiejar
-from urllib import request,error
+from urllib import request,error,parse
 import time
 import socket
 
 
-def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20):#单次访问网站
+def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="get",data=None):#单次访问网站
     socket.setdefaulttimeout(timeout)
     for key in proxy_ip:
         ip = proxy_ip[key]
@@ -15,7 +15,17 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20):#单次�
         cookie_handler = request.HTTPCookieProcessor(cookie)    #创建cookie处理器
 
         opener = request.build_opener(proxy_handler,cookie_handler)     #创建opener
-        RequestA = request.Request(url)
+
+        if(method=="get"):
+            if(data==None):
+                RequestA = request.Request(url)
+            else:
+                data=parse.urlencode(data)
+        elif(method=="post"):
+            if(data==None):
+                RequestA = request.Request(url)
+            else:
+                RequestA = request.Request(url,data)
 
         for key in headers.keys():
             RequestA.add_header(key,headers[key])    #添加报文头部
@@ -34,4 +44,4 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20):#单次�
     sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + Response.geturl() + \
                " success. Status:" + status +". Old url: "+url
     print(sentence)
-    return [cookie,Response.read()]
+    return Response.read()

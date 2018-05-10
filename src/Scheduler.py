@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import time
 import re
+import json
 import threading
 from IP_Queue import *
 from http import cookiejar
@@ -12,8 +13,10 @@ from queue import Queue
 
 class Scheduler:
 
-    def __init__(self,url,headers={'User-agent':'Mozilla/5.0'},time_max=1,time_delay=1,request_con=1,session=False):#任务调度
-        # url 为访问的地址， headers 为报头， time_max 为每个ip最大访问数， time_delay 为访问间隔, request_con 为任务并发数
+    def __init__(self,url,headers={'User-agent':'Mozilla/5.0'},method="get",data=None,time_max=1,time_delay=1,request_con=1,
+                 session=False,timeout=20,cookie=cookiejar.CookieJar()):#任务调度
+        # url 为访问的地址， headers 为报头， time_max 为每个ip最大访问数， time_delay 为访问间隔, request_con 为任务并发数,
+        #  session为连续ip访问功能，将返回使用的ip和cookies和访问数据
 
         global ipQueue, count, Max_count, mutex, Finish_count, Result_list, Failed_Thread
 
@@ -34,6 +37,12 @@ class Scheduler:
             print("error")
             Result_list.append("url格式错误")
             return None
+        if(data!=None):
+            try:
+                data=json.loads(data)
+            except ValueError:
+                Result_list.append("data的JSON格式错误")
+                return None
 
 
         for i in range(request_con):
@@ -46,9 +55,9 @@ class Scheduler:
                     pass
                 time.sleep(3)   #取出IP失败
                 if (count[0] >= Max_count[0]):
-                    print("shit!")
+                    Result_list=["超出出错次数"]
                     return None
-            t = threading.Thread(target=Visit_Thread, args=(i+1,url, headers, time_max, time_delay, proxy_ip, session))
+            t = threading.Thread(target=Visit_Thread, args=(i+1,url, headers, method,time_max, time_delay, proxy_ip,cookie,timeout,session,data))
             t.start()
 
         Thread_count=request_con
@@ -66,7 +75,7 @@ class Scheduler:
                         pass
                     time.sleep(3)  # 取出IP失败
                 t = threading.Thread(target=Visit_Thread,
-                                     args=(Thread_count, url, headers, time_max, time_delay, proxy_ip, session))
+                                     args=(Thread_count, url, headers,method, time_max, time_delay, proxy_ip,cookie, timeout,session,data))
                 t.start()
             except queue.Empty:
                 if(time.time()-waittime>=60):
@@ -76,11 +85,8 @@ class Scheduler:
             if(Finish_count[0] >= request_con):
                 break
 
-
-
-
         if(count[0]>=Max_count[0]):
-            print("shit!")
+            Result_list=["超出出错次数"]
             return None
 
 
@@ -90,40 +96,39 @@ class Scheduler:
 
 
 
-def Visit_Thread(index,url,headers,time_max,time_delay,proxy_ip,session): #任务线程
+def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,timeout,session,data): #任务线程
     global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex
     i=0
     Wrong = 0
-    result=cookiejar.CookieJar()
-
     while(i<time_max):
-        if not (session):
-            cookie = cookiejar.CookieJar()
-        else:
-            if not (len(result)==2):
-                cookie = result
-            else:
-                cookie = result[0]
-
-        result=visit(url,headers,proxy_ip,cookie)
-
+        result=visit(url,headers,proxy_ip,cookie,timeout,method,data)
         if (result==False):
             Wrong=Wrong+1
             if (Wrong == 3):
+
                 mutex.acquire()
                 count[0] = count[0] + 1
                 Failed_Thread.put(1)
                 mutex.release()
                 print("thread " + str(index) + " failed!")
                 return
-            result=cookiejar.CookieJar()
 
         else:
             Wrong = 0
             i = i + 1
 
             mutex.acquire()
-            Result_list.append(result[1])
+            if(session):
+                return_result={
+                    "ip":proxy_ip,
+                    "response":result
+                }
+                Result_list.append(return_result)
+            else:
+                return_result={
+                    "response":result
+                }
+                Result_list.append(return_result)
             mutex.release()
 
             if(i==time_max):
