@@ -40,6 +40,7 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
         status = str(Response.code)  #状态码
         response_header = Response.info()   #返回header
         print(getURL(url))
+
         webid=int(DBUtils.getidByURL(getURL(url)) )  #返回网址id
 
         ipid=int(DBUtils.getIPID(address,port))  #返回ip id
