@@ -32,7 +32,8 @@ class Scheduler:
 
         if not re.match(r'^https?:/{2}\w.+$', url):  # 若url不合法则返回error
             print("error")
-            return
+            Result_list.append("url格式错误")
+            return None
 
 
         for i in range(request_con):
@@ -46,7 +47,7 @@ class Scheduler:
                 time.sleep(3)   #取出IP失败
                 if (count[0] >= Max_count[0]):
                     print("shit!")
-                    return
+                    return None
             t = threading.Thread(target=Visit_Thread, args=(i+1,url, headers, time_max, time_delay, proxy_ip, session))
             t.start()
 
@@ -80,6 +81,7 @@ class Scheduler:
 
         if(count[0]>=Max_count[0]):
             print("shit!")
+            return None
 
 
     def get_result(self):

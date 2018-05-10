@@ -8,7 +8,7 @@ app=Flask(__name__)
 @app.route('/api/')
 def listener():
     url=request.args.get('url')
-    result=Scheduler(url=url)
+    result=Scheduler(url=str(url))
     result_list=result.get_result()
     response=""
     for i in result_list:
