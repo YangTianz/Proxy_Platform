@@ -69,8 +69,8 @@ def showAllIP():
     conn.close()
     return ip_list
 
-def changeIP_AN(Anonmyous,Address,port):
-    id = getIPID(Address, int(port))
+def changeIP_AN(Anonmyous,Address,Port):
+    id = getIPID(Address, int(Port))
 
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
