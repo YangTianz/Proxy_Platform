@@ -18,6 +18,11 @@ class IP:
     def getPort(self):
         return self.__port
 
+    # 用于测试IP的匿名、类型，未完成
+    def checkIPStatus(self):
+        return True
+
+
 #以下为IP类的三个不必要属性，IP的地理位置、IP的类型（HTTP/HTTPS）、是否匿名
     def setLocation(self, loc):
         self.__location = loc
