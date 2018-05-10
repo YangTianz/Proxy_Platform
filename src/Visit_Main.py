@@ -55,7 +55,9 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
     sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + Response.geturl() + \
                " success. Status:" + status +". Old url: "+url
     print(sentence)
-    return Response.read().decode()
+    Response=Response.read().decode()
+    print(Response)
+    return Response
 
 def getURL(url):
     headurl = parse.urlparse(url).scheme
