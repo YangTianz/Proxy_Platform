@@ -2,14 +2,16 @@
 
 from Scheduler import *
 from urllib import parse
-
+import DBUtils
 
 if __name__ == '__main__' :
-      url="http://www.baidu.com/wwww"
+      url="https://www.baidu.com/"
       headurl = parse.urlparse(url).scheme
       newurl = parse.urlparse(url).netloc
       url = headurl + "://" + newurl
       print(url)
+      id=DBUtils.getidByURL(url)
+      print(id)
 
 '''
    result=Scheduler("http://www.baidu.com",time_max=1,time_delay=2,request_con=1,session=True) #访问的方法

@@ -39,10 +39,12 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
         response_time = time.time() - response_time #响应时间
         status = str(Response.code)  #状态码
         response_header = Response.info()   #返回header
-        webid=DBUtils.getidByURL(getURL(url))   #返回网址id
-        ipid=DBUtils.getIPID(address,port)  #返回ip id
+        print(getURL(url))
+        webid=int(DBUtils.getidByURL(getURL(url)) )  #返回网址id
 
-        DBUtils.genResInfo(webid,ipid,response_time,method,status,response_header)
+        ipid=int(DBUtils.getIPID(address,port))  #返回ip id
+
+        DBUtils.genResInfo(webid,ipid,int(response_time),method,int(status),response_header)
 
 
 
@@ -56,7 +58,6 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
     return Response.read().decode()
 
 def getURL(url):
-    url = "http://www.baidu.com/wwww"
     headurl = parse.urlparse(url).scheme
     newurl = parse.urlparse(url).netloc
     url = headurl + "://" + newurl
