@@ -19,7 +19,7 @@ import threading
 import time
 
 from proxy_spider.config import (
-    HTTP_PROXY_SITES_BY_REGX, PROXY_SITES_BY_XPATH, GOOD_OUTPUT_FILE, BAD_OUTPUT_FILE,
+    HTTP_PROXY_SITES_BY_REGX, HTTP_PROXY_SITES_BY_XPATH, GOOD_OUTPUT_FILE, BAD_OUTPUT_FILE,
     USER_AGENT_LIST, RETRY_NUM, TIME_OUT, TEST_URL
 )   
 
@@ -70,7 +70,7 @@ class ProxySpider(object):
                 except Exception as e:
                     continue
         '''根据xpath 获取代理IP 部分'''
-        for sites in PROXY_SITES_BY_XPATH:
+        for sites in HTTP_PROXY_SITES_BY_XPATH:
             for site in sites['urls']:
                 resp = self._fetch(site)
                 if resp is not None and resp.status_code == 200:
