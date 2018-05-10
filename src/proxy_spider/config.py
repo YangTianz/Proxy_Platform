@@ -26,7 +26,7 @@ HTTP_PROXY_SITES_BY_REGX = {
 }
 
 # 需要利用xpath 定位代理IP 的站点
-PROXY_SITES_BY_XPATH = [
+HTTP_PROXY_SITES_BY_XPATH = [
     {
         'urls': ['http://www.66ip.cn/%s.html' % page for page in ['index'] + list(range(2, 11))],
         'ip_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[1]/text()",
@@ -38,6 +38,12 @@ PROXY_SITES_BY_XPATH = [
         'ip_xpath': ".//table[@class='list']/tbody/tr/td[1]/text()",
         'port_xpath': ".//table[@class='list']/tbody/tr/td[2]/text()",
         'Category': 'HTTP'
+    },
+    {
+        'urls': ['https://www.kuaidaili.com/free/inha/%s' % page for page in range(2, 10)],
+        'ip_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[1]/text()",
+        'port_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[2]/text()",
+        'Category': 'HTTP'
     }
     # },
     # {
@@ -45,6 +51,15 @@ PROXY_SITES_BY_XPATH = [
     #     'ip_xpath': ".//div[@class='row']/div[3]/table/tbody/tr[position()>1]/td[1]/text()" ,
     #     'port_xpath': ".//div[@class='row']/div[3]/table/tbody/tr[position()>1]/td[2]/text()"
     # }
+]
+
+FIX_PROXY_SITES_BY_XPATH = [
+    {
+        'urls': ['http://www.xicidaili.com/nn/%s' % page for page in range(1,5)],
+        'ip_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[1]/text()",
+        'port_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[2]/text()",
+        'Category': 'HTTP'
+    },
 ]
 
 # 代理输出位置
