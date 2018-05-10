@@ -1,17 +1,58 @@
 # -*- coding: UTF-8 -*-
-from IP import *
+from Utils.IP import *
 import time
 import pymysql
 
-#数据库的地址，可以自己去看一下
 host = '111.230.249.201'
 port = 3306
 user = 'test'
 passwd = 'Sustech15'
 db = 'Proxy_Platform'
 
-#---------------ipPool table-------------------
-#输出所有的IP信息
+"""   --------------------说明--------------------------
+void    showAllIP():
+打印数据库 ipPool 中所有的 IP 信息
+IP      getIPInfo(id):
+输入一个 IP 的 id（int），返回这个 IP 的信息，若 id 不存在，返回 NULL
+void    deleteIPinfo(id):
+输入一个 IP 的 id（int），删除这一条记录，无返回
+void    insertIPinfo(IP):
+新增一条 IP 记录，若重复则不添加
+int     getIPID(Address, Port):
+输入地址（str）、端口（int），获取相应的 IP 的 id
+
+void    showAllWeb():
+打印数据库 Websites 中所有的信息
+list    getWebsiteInfo(id):
+输入 Websites 的 id，获取所有信息
+int     insertWebsiteInfo(url):
+新增一条 URL 记录， 返回其在数据库中的 id
+void    deleteWebsiteinfo(id):
+输入一个 URL 的 id（int），删除这一条记录，无返回
+int     getidByURL(url):
+输入 url（str）信息，获取在 Websites 表中的 id
+
+void    showAllRes():
+打印数据库 ResponseTime 中所有的信息
+void    genResInfo(URLID, IPID, ResponseTime, Method, StatusCode, Header):
+生成一条新的记录，数据类型（int，int，int，str，int，str）
+void    updateResTimeByID(URLID, IPID, newtime):
+------未定-------
+void    updateResValueByID (URLID, IPID, Method, StatusCode, Header):
+------未定-------
+void    deleteByID(URLID, IPID):
+根据 URLid 和 IPid 删除记录
+
+list<IP>getIPs(n):
+输入需要获取的 ip 数 n，随机返回 n 个 ip 地址
+
+void    resetDatabases():
+清空数据库
+
+"""
+
+# --------------ipPool table-------------------
+# 输出所有的IP信息
 def showAllIP():
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -69,19 +110,7 @@ def insertIPinfo(IP):
     conn.close()
 
 
-# 清空数据库 ipPool
-def resetDatabases():
-    op = input("Are you sure?y/n\n")
-    if (op=='y'):
-        conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
-        cursor = conn.cursor()
-        sql = "delete from Proxy_Platform.ipPool where idIP !=0;"
-        sql += "alter table Proxy_Platform.ipPool auto_increment=1;"
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-
-#通过输入IP的信息来获取IP地址，这个功能在后续需要修改ResponeseTime 数据库时会被用到（需要提供ip_id）
+# 通过输入IP的信息来获取IP地址，这个功能在后续需要修改ResponeseTime 数据库时会被用到（需要提供ip_id）
 def getIPID(Address, Port):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -91,8 +120,8 @@ def getIPID(Address, Port):
     conn.close()
     return int(m[0])
 
-#---------------Website table-------------------
-#输出所有网页信息，包括URL和用户访问的时间
+# -------------------------------------Website table--------------------------------------------
+# 输出所有网页信息，包括URL和用户访问的时间
 def showAllWeb():
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -106,7 +135,7 @@ def showAllWeb():
         m = cursor.fetchone()
     conn.close()
 
-#获取一个网页的信息
+# 获取一个网页的信息
 def getWebsiteInfo(id):
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
@@ -139,29 +168,28 @@ def deleteWebsiteinfo(id):
     conn.commit()
     conn.close()
 
-def resetDatabasesWebsite():
-    op = input("Are you sure?y/n\n")
-    if ( op == 'y'):
-        conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
-        cursor = conn.cursor()
-        sql = "delete from Proxy_Platform.Websites where idWebsites !=0;"
-        sql += "alter table Proxy_Platform.Websites auto_increment=1;"
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
+# 根据访问的网址获取id
+def getidByURL(url):
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "select idWebsites from Websites where URL = '%s'" % url
+    cursor.execute(sql)
+    m = cursor.fetchone()
+    conn.close()
+    return int(m[0])
 
-#---------------ResponseTime
-#idResponseTime URLid ip_id ResponseTime Method StatusCode Header
-#输出所有的IP信息
-def showAllRT():
+# -----------------------------------ResponseTime----------------------------------------
+# 输出所有的Response信息
+def showAllRes():
     conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
     cursor = conn.cursor()
     sql = "select * from ResponseTime;"
     cursor.execute(sql)
     m = cursor.fetchone()
+    print("id\tURLid\tip_id\tResTime\tMethod\tCode\tHeader\t")
     while (m!=None):
         for i in m:
-            print(i, end='  ')
+            print(i, end='\t')
         print()
         m = cursor.fetchone()
     conn.close()
@@ -206,30 +234,7 @@ def deleteByID(URLID, IPID):
     conn.commit()
     conn.close()
 
-# 输出所有的Response信息
-def showAllRes():
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
-    cursor = conn.cursor()
-    sql = "select * from ResponseTime;"
-    cursor.execute(sql)
-    m = cursor.fetchone()
-    print("id\tURLid\tip_id\tResTime\tMethod\tCode\tHeader\t")
-    while (m!=None):
-        for i in m:
-            print(i, end='\t')
-        print()
-        m = cursor.fetchone()
-    conn.close()
-
-# 根据访问的网址获取id
-def getidByURL(url):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
-    cursor = conn.cursor()
-    sql = "select idWebsites from Websites where URL = '%s'" % url
-    cursor.execute(sql)
-    m = cursor.fetchone()
-    conn.close()
-    return int(m[0])
+# -----------------------------------------------------------------------------
 
 # 从数据库里随机取10个IP
 def getIPs(n):
@@ -255,4 +260,22 @@ def getIPs(n):
         list.append(a)
 
     return list
+
+# 清空数据库
+def resetDatabases():
+    op = input("Are you sure?y/n\n")
+    if (op=='y'):
+        conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+        cursor = conn.cursor()
+        sql = "delete from Proxy_Platform.ipPool where idIP !=0;"
+        sql += "alter table Proxy_Platform.ipPool auto_increment=1;"
+        cursor.execute(sql)
+        sql = "delete from Proxy_Platform.Websites where idWebsites !=0;"
+        sql += "alter table Proxy_Platform.Websites auto_increment=1;"
+        cursor.execute(sql)
+        sql = "delete from Proxy_Platform.ResponseTime where idResponseTime!=0;"
+        sql += "alter table Proxy_Platform.ResponseTime auto_increment=1;"
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
 

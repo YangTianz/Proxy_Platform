@@ -8,8 +8,8 @@ run_spider():抓取并测试代理ip是否可以使用 抓取、测试网址均�
 运行时创建一个线程用于抓取ip，其他50个线程用于检测ip可用性，结束后通过总线程写入
 直接运行此文件将运行run_spider()
 """
-from DBUtils import insertIPinfo
-from IP import IP
+from Utils.DBUtils import insertIPinfo
+from Utils.IP import IP
 import requests
 import queue
 import re

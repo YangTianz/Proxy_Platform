@@ -1,13 +1,14 @@
 # -*- coding: UTF-8 -*-
 
 from queue import Queue
-import DBUtils
+from Utils import DBUtils
+
 
 class IP_Queue:#创建可用IP队列
 
     def __init__(self,size):
         self.__ip_queue=Queue()
-        ip_list=DBUtils.getIPs(size)
+        ip_list= DBUtils.getIPs(size)
         for ip in ip_list:
             address=ip.getAddress()
             port=ip.getPort()
