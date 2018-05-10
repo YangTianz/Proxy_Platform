@@ -69,6 +69,22 @@ def showAllIP():
     conn.close()
     return ip_list
 
+def showStatus():
+    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    cursor = conn.cursor()
+    sql = "select * from ipPool;"
+    cursor.execute(sql)
+    m = cursor.fetchone()
+    sentence=""
+    while (m != None):
+        for i in m:
+            sentence=sentence+str(i)+"\t"
+        sentence=sentence+'\n'
+        m = cursor.fetchone()
+    conn.close()
+    print(sentence)
+    return sentence
+
 def changeIP_AN(Anonmyous,Address,Port):
     id = getIPID(Address, int(Port))
 

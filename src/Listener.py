@@ -3,14 +3,15 @@
 from flask import Flask, request
 from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
+from Valid_check import Checker
 
-
-run_spider()    #启动爬虫爬可用IP
+#run_spider()    #启动爬虫爬可用IP
 
 app=Flask(__name__)
 
 @app.route('/api/')
 def listener():
+    url = request.args.get('url')
     try:
         url=request.args.get('url')
     except:
@@ -34,7 +35,6 @@ def listener():
     try:
         time_delay=float(request.args.get('time_delay'))
     except Exception as e:
-        print(e.message)
         time_delay=""
     try:
         request_con=int(request.args.get('request_con'))
@@ -46,8 +46,6 @@ def listener():
             session=True
         elif(session=="False"):
             session=False
-        else:
-            return "Error with session"
     except:
         session=""
     try:
@@ -55,33 +53,46 @@ def listener():
     except:
         cookies=""
     try:
-        timeout=request.args.get('cookies')
+        timeout=request.args.get('timeout')
     except:
         timeout=""
+    url = request.args.get('url')
+    time_max = int(request.args.get('time_max'))
+    headers = None
+    data = None
+    session = request.args.get('session')
+    cookies = None
+    timeout = None
+    Method="get"
+    time_delay=20
+    request_con = int(request.args.get('request_con'))
+
 
     result=get_result(url,headers,method,data,time_max,time_delay,request_con,session,timeout,cookies)
     return result
 
-
+@app.route('/status')
+def status():
+    return DBUtils.showStatus()
 
 def get_result(url,headers,method,data,time_max,time_delay,request_con,session,timeout,cookie):
-    if(headers==""):
+    if(headers==None):
         headers={'User-agent':'Mozilla/5.0'}
-    if(method==""):
+    if(method==None):
         method="get"
-    if(data==""):
+    if(data==None):
         data=None
-    if(time_max==""):
+    if(time_max==None):
         time_max=1
-    if(time_delay==""):
+    if(time_delay==None):
         time_delay=1
-    if(request_con==""):
+    if(request_con==None):
         request_con=1
-    if(session==""):
+    if(session==None):
         session=False
-    if(timeout==""):
+    if(timeout==None):
         timeout=20
-    if(cookie==""):
+    if(cookie==None):
         cookie=cookiejar.CookieJar()
 
 
@@ -131,4 +142,6 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=80,debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
+
+
