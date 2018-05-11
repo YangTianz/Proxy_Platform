@@ -5,7 +5,7 @@ from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
 from Valid_check import Checker
 
-run_spider()    #启动爬虫爬可用IP
+
 
 app=Flask(__name__)
 
@@ -142,6 +142,7 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
 
 
 if __name__ == '__main__':
+    run_spider()  # 启动爬虫爬可用IP
     app.run(host='0.0.0.0', port=80, debug=True)
 
 
