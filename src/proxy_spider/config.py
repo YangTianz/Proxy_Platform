@@ -6,8 +6,9 @@
 """配置文件
 """
 
+
 # 利用一个正则就可以直接采集代理IP的站点
-HTTP_PROXY_SITES_BY_REGX = {
+PROXY_SITES_BY_REGX = {
     'urls': [
         'http://ab57.ru/downloads/proxyold.txt',
         'http://www.proxylists.net/http_highanon.txt',
@@ -22,28 +23,34 @@ HTTP_PROXY_SITES_BY_REGX = {
         'http://www.proxylists.net/?HTTP',
         'http://uks.pl.ua/script/getproxy.php?last'
     ],
-    'proxy_regx': r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,4}"
+    'proxy_regx': r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,4}"   
 }
 
 # 需要利用xpath 定位代理IP 的站点
-HTTP_PROXY_SITES_BY_XPATH = [
+PROXY_SITES_BY_XPATH = [
     {
         'urls': ['http://www.66ip.cn/%s.html' % page for page in ['index'] + list(range(2, 11))],
         'ip_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[1]/text()",
         'port_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[2]/text()",
-        'Category': 'HTTP'
+        'anon_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[4]/text()",
+        'cat_xpath': "",
+        'verify':"¸ßÄä´úÀí"
     },
     {
         'urls': ['http://www.mimiip.com/gngao/%s' % page for page in range(2, 10)],
         'ip_xpath': ".//table[@class='list']/tbody/tr/td[1]/text()",
         'port_xpath': ".//table[@class='list']/tbody/tr/td[2]/text()",
-        'Category': 'HTTP'
+        'anon_xpath':".//table[@class='list']/tbody/tr/td[4]/text()",
+        'cat_xpath':".//table[@class='list']/tbody/tr/td[5]/text()",
+        'verify':"高匿"
     },
     {
-        'urls': ['https://www.kuaidaili.com/free/inha/%s' % page for page in range(2, 10)],
+        'urls': ['https://www.kuaidaili.com/free/inha/%s/' % page for page in range(2, 10)],
         'ip_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[1]/text()",
         'port_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[2]/text()",
-        'Category': 'HTTP'
+        'anon_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[3]/text()",
+        'cat_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[4]/text()",
+        'verify':"高匿名"
     }
     # },
     # {
@@ -53,18 +60,14 @@ HTTP_PROXY_SITES_BY_XPATH = [
     # }
 ]
 
-FIX_PROXY_SITES_BY_XPATH = [
-    {
-        'urls': ['http://www.xicidaili.com/nn/%s' % page for page in range(1,5)],
-        'ip_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[1]/text()",
-        'port_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[2]/text()",
-        'Category': 'HTTP'
-    },
-]
+CHECK_PROXY_XPATH = {
+    "HTTP_VIA": ".//li[@class='proxdata'][1]/span/text()", 
+    "HTTP_X_FORWARDED_FOR": ".//li[@class='proxdata'][2]/span/text()"
+}
 
 # 代理输出位置
-GOOD_OUTPUT_FILE = "proxy_spider/file/proxy_list_good.txt"
-BAD_OUTPUT_FILE = 'proxy_spider/file/proxy_list_bad.txt'
+GOOD_OUTPUT_FILE = "proxy_list_good.txt"
+BAD_OUTPUT_FILE = 'proxy_list_bad.txt'
 
 
 # User-Agent list
@@ -91,7 +94,7 @@ RETRY_NUM = 3
 
 # 测试URL
 # TEST_URL = "http://www.iprivacytools.com/proxy-checker-anonymity-test/"
-TEST_URL = 'http://www.baidu.com'
+TEST_URL = 'https://www.baidu.com'
 ## 七牛AccessKey/SecretKey,具体含义参考七牛官网文档
 
 QINIU_AUTH = {

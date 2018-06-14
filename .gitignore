@@ -6,3 +6,5 @@ __pycache__/
 .idea/Proxy_Platform.iml
 .idea/vcs.xml
 .idea/workspace.xml
+proxy_list_bad.txt
+proxy_list_good.txt
