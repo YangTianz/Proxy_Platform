@@ -3,6 +3,7 @@
 from queue import Queue
 from Utils import redisdb
 from Utils import DBUtils2
+import json
 
 
 class IP_Queue:#创建可用IP队列
@@ -12,7 +13,7 @@ class IP_Queue:#创建可用IP队列
         self.__myip=1
         if(session!=False) and (session!=True):
 
-            self.__myip=DBUtils2.getIP(session)
+            self.__myip=json.dumps(DBUtils2.getIP(session))
             if(self.__myip==None):
                 self.__myip="?"
             self.__ip_queue.put(self.__myip)

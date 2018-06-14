@@ -27,7 +27,7 @@ if __name__ == '__main__' :
                 aurl=url[r]
                 t=threading.Thread(target=thread,args=(aurl,))
 '''
-            url="http://localhost/api/?url=https://www.etymonline.com/word/fuck&&session=ymc2roc1"
+            url="http://localhost/api/?url=https://www.etymonline.com/word/fuck&&session=True"
             response = request.urlopen(url)
             text = response.read().decode()
             text=json.loads(text)
