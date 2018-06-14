@@ -34,7 +34,7 @@ if __name__ == '__main__' :
             url.append("https://github.com/")
             url.append("https://weibo.com/")
 
-            myurl = "http://0.0.0.0:8000/api/?url="
+            myurl = "http://0.0.0.0/api/?url="
             list1=[]
             for i in range(150):
                 r=int(random.random()*len(url))
