@@ -164,14 +164,11 @@ class ProxySpider(object):
                 cat_list = resp.xpath(cat_xpath)
             else:
                 cat_list = None
-            print(anon_list)
-            print(verify)
             for i in range(len(ip_list)):
                 if anon_list[i] == verify:
                     proxy = ip_list[i] + " " + port_list[i] + " " \
                             + "1" + " " \
                             + (cat_list[i] if cat_list else "HTTP")
-                    print(proxy)
                     proxy_list.append(proxy)
         return proxy_list
 
@@ -192,7 +189,7 @@ class ProxySpider(object):
         with open('./file/'+GOOD_OUTPUT_FILE, "w+") as proxy_file:
             proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
             for proxy in self.good_proxy:
-                print("Write %s to proxy_list_good.txt\n" % proxy.getAddress())
+                print("Write %s\n" % proxy.getAddress())
                 # proxy_file.write('%-30s%-30s%-30s%-30s\n'
                 #                  % (proxy.getAddress(), proxy.getPort(), proxy.getCategory(), proxy.getAnon()))
                 conn = RedisClient()
