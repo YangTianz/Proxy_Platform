@@ -28,7 +28,6 @@ class Scheduler:
         Max_count = [request_con * time_max]
         Result_list = []
         Session=session
-        print(session)
 
 
         if(request_con<5):
