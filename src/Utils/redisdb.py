@@ -5,6 +5,12 @@ from Utils.IP import *
 from random import *
 import re
 
+"""
+count获取ip总数
+batch(start,end)分段获取ip，返回一个IP数组
+decrease(IP) 减分，自动减1，到0抛出
+"""
+
 class RedisClient(object):
     def __init__(self, host = REDIS_HOST, port = REDIS_PORT, password = REDIS_PASSWORD):
         self.db = redis.StrictRedis(host=host, port=port, password=password, decode_responses=True)
@@ -21,6 +27,18 @@ class RedisClient(object):
             ips.append(self.translatetoIP(i))
         return ips
 
+    def batch(self, start, stop):
+        """
+        批量获取
+        :param start: 开始索引
+        :param stop: 结束索引
+        :return: 代理列表
+        """
+        ips = []
+        result = self.db.zrevrange(REDIS_KEY, start, stop - 1)
+        for i in result:
+            ips.append(self.translatetoIP(i))
+        return ips
 
     def add(self, IP, score=INITIAL_SCORE):
         proxy = self.translatetoproxy(IP)
@@ -44,6 +62,18 @@ class RedisClient(object):
         else:
             print('代理', proxy, '当前分数', score, '移除')
             return self.db.zrem(REDIS_KEY, proxy)
+
+    def increase(self, IP, k):
+        """
+        代理值减一分，小于最小值则删除
+        :param proxy: 代理
+        :return: 修改后的代理分数
+        """
+        proxy = self.translatetoproxy(IP)
+        score = self.db.zscore(REDIS_KEY, proxy)
+        if score and score + k < MAX_SCORE:
+            print('代理', proxy, '当前分数', score, '加', k)
+            return self.db.zincrby(REDIS_KEY, proxy, k)
 
     def exists(self, IP):
         """
@@ -71,6 +101,20 @@ class RedisClient(object):
         """
         return self.db.zcard(REDIS_KEY)
 
+    def ipstatus(self):
+        print("当前 IP 总数：", self.count())
+        print("IP 分数分布: (越高越好)")
+        print("1 ~ 10:  ", self.db.zcount(REDIS_KEY,1,10))
+        print("11 ~ 20: ", self.db.zcount(REDIS_KEY, 11, 20))
+        print("21 ~ 30: ", self.db.zcount(REDIS_KEY, 21, 30))
+        print("31 ~ 40: ", self.db.zcount(REDIS_KEY, 31, 40))
+        print("41 ~ 50: ", self.db.zcount(REDIS_KEY, 41, 50))
+        print("51 ~ 60: ", self.db.zcount(REDIS_KEY, 51, 60))
+        print("61 ~ 70: ", self.db.zcount(REDIS_KEY, 61, 70))
+        print("71 ~ 80: ", self.db.zcount(REDIS_KEY, 71, 80))
+        print("81 ~ 90: ", self.db.zcount(REDIS_KEY, 81, 90))
+        print("91 ~ 100:", self.db.zcount(REDIS_KEY, 91, 100))
+        print("只有分数大于 20 的 IP 地址会被使用")
 
     def translatetoproxy(self, IP):
         proxy = IP.getAddress()
