@@ -11,6 +11,7 @@ class IP_Queue:#创建可用IP队列
         self.__ip_queue=Queue()
         self.__myip=1
         if(session!=False) and (session!=True):
+
             self.__myip=DBUtils2.getIP(session)
             if(self.__myip==None):
                 self.__myip="?"
