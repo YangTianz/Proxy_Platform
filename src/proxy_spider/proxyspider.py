@@ -22,25 +22,7 @@ import time
 from proxy_spider.config import (
     PROXY_SITES_BY_REGX, PROXY_SITES_BY_XPATH, GOOD_OUTPUT_FILE, BAD_OUTPUT_FILE,
     USER_AGENT_LIST, RETRY_NUM, TIME_OUT, TEST_URL
-)   
-
-
-# class Proxy(object):
-#     def __init__(self, ip_port, anonymity_level, proxy_type='HTTP'):
-#         self.ip_port = ip_port
-#         self.proxy_type = proxy_type
-#         self.anonymity_level = anonymity_level
-#
-#     def __eq__(self, other):
-#         if isinstance(other, Proxy):
-#             return ((self.ip_port == other.ip_port)
-#                     and (self.proxy_type == other.proxy_type)
-#                     and (self.anonymity_level == other.anonymity_level))
-#         else:
-#             return False
-#
-#     def __hash__(self):
-#         return hash(self.ip_port + " " + self.proxy_type + " " + self.anonymity_level)
+)
 
 
 class ProxySpider(object):
@@ -51,6 +33,7 @@ class ProxySpider(object):
         self.lock = threading.Lock()
         self.good_proxy = set()
         self.bad_proxy = set()
+        self.count = 0
 
     """
        起一个线程将采集到的所有代理IP写入一个queue中
@@ -60,16 +43,17 @@ class ProxySpider(object):
         根据正则直接获取代理IP 部分
         :return:
         """
-        # for site in PROXY_SITES_BY_REGX['urls']:
-        #     resp = self._fetch(site)
-        #     if resp is not None and resp.status_code == 200:
-        #         try:
-        #             proxy_list = self._extract_by_regx(resp)
-        #             for proxy in proxy_list:
-        #                 print("Get proxy %s and get into queue" % proxy)
-        #                 self.proxy_queue.put((proxy, 'HTTP'))
-        #         except Exception as e:
-        #             continue
+        for site in PROXY_SITES_BY_REGX['urls']:
+            resp = self._fetch(site)
+            if resp is not None and resp.status_code == 200:
+                try:
+                    proxy_list = self._extract_by_regx(resp)
+                    for proxy in proxy_list:
+                        print("Get proxy %s and get into queue" % proxy)
+                        ip, port = proxy.split(":")
+                        self.proxy_queue.put((ip+" "+port+' -1'+' HTTP'))
+                except Exception as e:
+                    continue
         '''根据xpath 获取代理IP 部分'''
         for sites in PROXY_SITES_BY_XPATH:
             for site in sites['urls']:
@@ -95,6 +79,7 @@ class ProxySpider(object):
         while not self.fetch_finish:
             try:
                 proxy = self.proxy_queue.get(timeout=1)
+                self.count += 1
                 # self._deduplicate_proxy(proxy)
                 print("get proxy from queue")
                 print(proxy)
@@ -104,7 +89,7 @@ class ProxySpider(object):
                 proxy_instance = IP(ip, int(port))
                 proxy_instance.setCategory(cat)
                 proxy_instance.setAnon(anon)
-                if check_proxy is not None and check_proxy.status_code == 200:
+                if check_proxy and check_proxy.status_code == 200:
                     # resp_str = html.fromstring(check_proxy.text)
                     # http_via = resp_str.xpath(CHECK_PROXY_XPATH['HTTP_VIA'])
                     # http_x_forward_for = resp_str.xpath(CHECK_PROXY_XPATH['HTTP_X_FORWARDED_FOR'])
@@ -174,7 +159,7 @@ class ProxySpider(object):
                 if anon_list[i] == verify:
                     proxy = ip_list[i] + " " + port_list[i] + " " \
                             + "1" + " " \
-                            + (cat_list[i] if cat_list else "Unknown")
+                            + (cat_list[i] if cat_list else "HTTP")
                     proxy_list.append(proxy)
         return proxy_list
 
@@ -192,7 +177,7 @@ class ProxySpider(object):
 
     """ 持久化可用代理IP """
     def output_proxy(self):
-        with open('./'+GOOD_OUTPUT_FILE, "w+") as proxy_file:
+        with open('./file/'+GOOD_OUTPUT_FILE, "w+") as proxy_file:
             proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
             for proxy in self.good_proxy:
                 print("Write %s to proxy_list_good.txt\n" % proxy.getAddress())
@@ -202,7 +187,7 @@ class ProxySpider(object):
                 conn.add(proxy)
                 #insertIPinfo(proxy)
 
-        with open('./'+BAD_OUTPUT_FILE, "w+") as proxy_file:
+        with open('./file/'+BAD_OUTPUT_FILE, "w+") as proxy_file:
             proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
             for proxy in self.bad_proxy:
                 print("Write %s to proxy_list_bad.txt\n" % proxy.getAddress())
@@ -221,6 +206,7 @@ class ProxySpider(object):
         """最终输出可用代理IP"""
         print('Try to write down IP address')
         self.output_proxy()
+        print('No.', self.count)
 
 
 def run_spider():

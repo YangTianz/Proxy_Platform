@@ -8,9 +8,16 @@ class IP:
         self.__port = port
         self.__isAnon = -1
         self.__location = ""
-        self.__categ = ""
+        self.__categ = "HTTP"
 
-    
+    def get(self):
+        re = self.__address
+        re += ':'
+        re += str(self.__port)
+        re += ':'
+        re += self.getCategory()
+        return re
+
     def getAddress(self):
         return self.__address
 
@@ -44,7 +51,10 @@ class IP:
 
 
     def setCategory(self, cat):
-        self.__categ = cat
+        if cat!='HTTP' and cat!='HTTPS':
+            self.__categ = 'HTTP'
+        else:
+            self.__categ = cat
 
     def getCategory(self):
         return self.__categ

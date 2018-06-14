@@ -29,7 +29,7 @@ PROXY_SITES_BY_REGX = {
 # 需要利用xpath 定位代理IP 的站点
 PROXY_SITES_BY_XPATH = [
     {
-        'urls': ['http://www.66ip.cn/%s.html' % page for page in ['index'] + list(range(2, 11))],
+        'urls': ['http://www.66ip.cn/%s.html' % page for page in list(range(2, 11))],
         'ip_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[1]/text()",
         'port_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[2]/text()",
         'anon_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[4]/text()",
@@ -51,6 +51,22 @@ PROXY_SITES_BY_XPATH = [
         'anon_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[3]/text()",
         'cat_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[4]/text()",
         'verify':"高匿名"
+    },
+    {
+        'urls': ['http://www.ip3366.net/free/page=1'],
+        'ip_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[1]/text()",
+        'port_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[2]/text()",
+        'anon_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[3]/text()",
+        'cat_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[4]/text()",
+        'verify':"高匿代理IP"
+    },
+    {
+        'urls': ['http://www.swei360.com/free/?page=%s' % page for page in range(1,3)],
+        'ip_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[1]/text()",
+        'port_xpath': ".//table[@class='table table-bordered table-striped']/tbody/tr/td[2]/text()",
+        'anon_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[3]/text()",
+        'cat_xpath':".//table[@class='table table-bordered table-striped']/tbody/tr/td[4]/text()",
+        'verify':"高匿代理IP"
     }
     # },
     # {
@@ -95,12 +111,3 @@ RETRY_NUM = 3
 # 测试URL
 # TEST_URL = "http://www.iprivacytools.com/proxy-checker-anonymity-test/"
 TEST_URL = 'https://www.baidu.com'
-## 七牛AccessKey/SecretKey,具体含义参考七牛官网文档
-
-QINIU_AUTH = {
-    "AccessKey": "*********************",
-    "SecretKey": "*********************"
-}
-
-## 上传到七牛 的bucket, 具体含义参考七牛官网文档
-QINIU_BUCKET = "*****"
