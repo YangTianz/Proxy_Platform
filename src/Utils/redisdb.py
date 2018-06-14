@@ -48,7 +48,7 @@ class RedisClient(object):
         if not self.db.zscore(REDIS_KEY, proxy):
             return self.db.zadd(REDIS_KEY, score, proxy)
 
-    def decrease(self, IP):
+    def decrease(self, IP, k):
         """
         代理值减一分，小于最小值则删除
         :param proxy: 代理
@@ -56,24 +56,21 @@ class RedisClient(object):
         """
         proxy = self.translatetoproxy(IP)
         score = self.db.zscore(REDIS_KEY, proxy)
-        if score and score > MIN_SCORE:
+        if score and score - k > MIN_SCORE:
             print('代理', proxy, '当前分数', score, '减 1')
-            return self.db.zincrby(REDIS_KEY, proxy, -1)
+            return self.db.zincrby(REDIS_KEY, proxy, -k)
         else:
             print('代理', proxy, '当前分数', score, '移除')
             return self.db.zrem(REDIS_KEY, proxy)
 
     def increase(self, IP, k):
-        """
-        代理值减一分，小于最小值则删除
-        :param proxy: 代理
-        :return: 修改后的代理分数
-        """
         proxy = self.translatetoproxy(IP)
         score = self.db.zscore(REDIS_KEY, proxy)
         if score and score + k < MAX_SCORE:
             print('代理', proxy, '当前分数', score, '加', k)
             return self.db.zincrby(REDIS_KEY, proxy, k)
+        else:
+            max(IP)
 
     def exists(self, IP):
         """
@@ -132,4 +129,7 @@ class RedisClient(object):
         if len(proxy)>2:
             a.setCategory(proxy[2])
         return a
+<<<<<<< HEAD
+=======
 
+>>>>>>> 10d81bda03651adbfbd19ab7a523524334c3db1d
