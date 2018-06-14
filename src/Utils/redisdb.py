@@ -20,7 +20,7 @@ class RedisClient(object):
         随机获取有效代理，首先尝试获取最高分数代理，如果不存在，按照排名获取，否则异常
         :return: 随机代理
         """
-        result = self.db.zrevrange(REDIS_KEY, 0, 100)
+        result = self.db.zrevrange(REDIS_KEY, 19, 100)
         list = sample(result, k)
         ips = []
         for i in list:
@@ -101,9 +101,8 @@ class RedisClient(object):
     def ipstatus(self):
         result = "当前 IP 总数："+ str(self.count()) + "\n"
         result += "IP 分数分布: (越高越好)\n"
-        result += "1 ~ 10:  " + str(self.db.zcount(REDIS_KEY,1,10)) + "\n"
-        result += "11 ~ 20: " + str(self.db.zcount(REDIS_KEY, 11, 20)) + "\n"
-        result += "21 ~ 30: " + str(self.db.zcount(REDIS_KEY, 21, 30)) + "\n"
+        result += "1 ~ 19:  " + str(self.db.zcount(REDIS_KEY,1,19)) + "\n"
+        result += "20 ~ 30: " + str(self.db.zcount(REDIS_KEY, 20, 30)) + "\n"
         result += "31 ~ 40: " + str(self.db.zcount(REDIS_KEY, 31, 40)) + "\n"
         result += "41 ~ 50: " + str(self.db.zcount(REDIS_KEY, 41, 50)) + "\n"
         result += "51 ~ 60: " + str(self.db.zcount(REDIS_KEY, 51, 60)) + "\n"
@@ -111,7 +110,7 @@ class RedisClient(object):
         result += "71 ~ 80: " + str(self.db.zcount(REDIS_KEY, 71, 80)) + "\n"
         result += "81 ~ 90: " + str(self.db.zcount(REDIS_KEY, 81, 90)) + "\n"
         result += "90 ~ 100:" + str(self.db.zcount(REDIS_KEY, 91, 100)) + "\n"
-        result +="只有分数大于 20 的 IP 地址会被使用"
+        result +="只有分数大于 19 的 IP 地址会被使用"
         return result
 
     def translatetoproxy(self, IP):
@@ -130,3 +129,5 @@ class RedisClient(object):
             a.setCategory(proxy[2])
         return a
 
+conn = RedisClient()
+print(conn.ipstatus())
