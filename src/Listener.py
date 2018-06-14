@@ -21,8 +21,6 @@ def listener():
     session=request1.args.get('session',False)
     if(session=="True"):
         session=True
-    else:
-        session=False
     cookies=request1.args.get('cookies',None)
     timeout=request1.args.get('timeout',20)
     try:

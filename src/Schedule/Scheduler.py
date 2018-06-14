@@ -131,7 +131,7 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
                 if(Session!=False):
                     mydict['session']=Session
                 if(Session==1):
-                    mydict['ip']=(ipQueue.checkip()).get()
+                    mydict['ip']=str(proxy_ip)
                 Result_list.append(mydict)
                 mutex.release()
                 return
@@ -193,7 +193,7 @@ def getURL(url):
     url = headurl + "://" + newurl
     return url
 
-<<<<<<< HEAD
-=======
-#a = re.findall(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d*",s)
->>>>>>> 9d75b04ec3cae19f7277506a2327fbc18f0b9f09
+def getipstr(s):
+    a = re.findall(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d*",s)[0]
+    return a
+

@@ -3,6 +3,8 @@
 from queue import Queue
 from Utils import redisdb
 from Utils import DBUtils2
+import re
+import json
 
 
 class IP_Queue:#创建可用IP队列
@@ -11,7 +13,8 @@ class IP_Queue:#创建可用IP队列
         self.__ip_queue=Queue()
         self.__myip=1
         if(session!=False) and (session!=True):
-            self.__myip=DBUtils2.getIP(session)
+
+            self.__myip={"http":getipstr(DBUtils2.getIP(session))}
             if(self.__myip==None):
                 self.__myip="?"
             self.__ip_queue.put(self.__myip)
@@ -43,3 +46,6 @@ class IP_Queue:#创建可用IP队列
         if (self.__myip == "?"):
             return None
         return self.__myip
+def getipstr(s):
+    a = re.findall(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d*",s)[0]
+    return a

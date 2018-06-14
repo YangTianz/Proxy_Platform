@@ -16,7 +16,7 @@ class IP:
         re += str(self.__port)
         re += ':'
         re += self.getCategory()
-        return re
+        return re  # 11.11.11.11:80:HTTP
 
     def getAddress(self):
         return self.__address

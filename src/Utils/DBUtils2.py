@@ -62,24 +62,21 @@ def addSession(ip):
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     name = name = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-    sql = "insert into Session (ip, name) values ('%s', '%s');" \
+    sql = "insert into Session (ip, name) values (\"%s\", \"%s\");" \
           % (ip, name)
     cursor.execute(sql)
     conn.commit()
     return name;
 
-def getIP(name):
+def getIP(name): # return IP()     111.111.111.111:80
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select ip from Session where name='%s';" % name
     cursor.execute(sql)
     m = cursor.fetchone()
     conn.close()
-    if m != None:
-        m = m[0]
-        m = str.split(m,':')
-        a = IP(m[0], int(m[1]))
-        return a
+    if m!=None:
+        return m[0]
     else:
         return
 
@@ -90,6 +87,9 @@ def resetDatabases():
         cursor = conn.cursor()
         sql = "delete from Proxy_Platform.Saves where idSaves !=0;"
         sql += "alter table Proxy_Platform.Saves auto_increment=1;"
+        cursor.execute(sql)
+        sql = "delete from Proxy_Platform.Session where idSession !=0;"
+        sql += "alter table Proxy_Platform.Session auto_increment=1;"
         cursor.execute(sql)
         conn.commit()
         conn.close()
