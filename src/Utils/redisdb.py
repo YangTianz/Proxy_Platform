@@ -5,6 +5,12 @@ from Utils.IP import *
 from random import *
 import re
 
+"""
+count获取ip总数
+batch(start,end)分段获取ip，返回一个IP数组
+decrease(IP) 减分，自动减1，到0抛出
+"""
+
 class RedisClient(object):
     def __init__(self, host = REDIS_HOST, port = REDIS_PORT, password = REDIS_PASSWORD):
         self.db = redis.StrictRedis(host=host, port=port, password=password, decode_responses=True)
@@ -21,6 +27,18 @@ class RedisClient(object):
             ips.append(self.translatetoIP(i))
         return ips
 
+    def batch(self, start, stop):
+        """
+        批量获取
+        :param start: 开始索引
+        :param stop: 结束索引
+        :return: 代理列表
+        """
+        ips = []
+        result = self.db.zrevrange(REDIS_KEY, start, stop - 1)
+        for i in result:
+            ips.append(self.translatetoIP(i))
+        return ips
 
     def add(self, IP, score=INITIAL_SCORE):
         proxy = self.translatetoproxy(IP)
@@ -88,7 +106,5 @@ class RedisClient(object):
             a.setCategory(proxy[2])
         return a
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e0d13e63ca6f370b16cb6ee024e7a91e10224cef
+conn = RedisClient()
+print(conn.count())

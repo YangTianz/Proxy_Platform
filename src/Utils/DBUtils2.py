@@ -62,9 +62,8 @@ def resetDatabases():
     if (op=='y'):
         conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
         cursor = conn.cursor()
-        sql = "delete from Proxy_Platform.Saves where idIP !=0;"
+        sql = "delete from Proxy_Platform.Saves where idSaves !=0;"
         sql += "alter table Proxy_Platform.Saves auto_increment=1;"
         cursor.execute(sql)
         conn.commit()
         conn.close()
-
