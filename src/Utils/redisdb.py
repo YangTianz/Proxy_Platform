@@ -105,6 +105,3 @@ class RedisClient(object):
         if len(proxy)>2:
             a.setCategory(proxy[2])
         return a
-
-conn = RedisClient()
-print(conn.count())
