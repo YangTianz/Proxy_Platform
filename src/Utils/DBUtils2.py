@@ -10,7 +10,7 @@ def insertWebsiteInfo(ip,url,method,statuscode,header):
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "insert into Saves (ip, url, method, statuscode, header, time) values ('%s', '%s', '%s', '%d' ,'%s','%s');" \
-          % (ip,url,method,statuscode,header,time.asctime())
+          % (ip, url, method, statuscode, header, time.asctime())
     cursor.execute(sql)
     conn.commit()
     return
