@@ -58,7 +58,9 @@ class ProxySpider(object):
         for sites in PROXY_SITES_BY_XPATH:
             for site in sites['urls']:
                 resp = self._fetch(site)
+                print('Fetch', site)
                 if resp is not None and resp.status_code == 200:
+                    print('Success')
                     try:
                         proxy_list = self._extract_by_xpath(resp,
                                                             sites['ip_xpath'], sites['port_xpath'],
@@ -68,7 +70,14 @@ class ProxySpider(object):
                             print("Get proxy %s and get into queue" % proxy)
                             self.proxy_queue.put(proxy)
                     except Exception as e:
-                        continue                  
+                        continue
+                else:
+                    print("%s Visiting failed" % site)
+                    if resp is not None:
+                        print('Error Code:', resp.status_code)
+                    else:
+                        print('Time Out')
+
         print("Get all proxy in queue!")
         self.fetch_finish = True
     """
@@ -107,7 +116,6 @@ class ProxySpider(object):
                 else:
                     self._deduplicate_proxy(proxy_instance, False)
             except queue.Empty:
-                print('get proxy timeout')
                 continue
 
     """ 抓取代理网站函数"""
@@ -120,6 +128,7 @@ class ProxySpider(object):
             "verify": False,       
         }
         resp = None
+        print("")
         for i in range(RETRY_NUM):
             try:
                 if proxy is not None:
@@ -155,11 +164,14 @@ class ProxySpider(object):
                 cat_list = resp.xpath(cat_xpath)
             else:
                 cat_list = None
+            print(anon_list)
+            print(verify)
             for i in range(len(ip_list)):
                 if anon_list[i] == verify:
                     proxy = ip_list[i] + " " + port_list[i] + " " \
                             + "1" + " " \
                             + (cat_list[i] if cat_list else "HTTP")
+                    print(proxy)
                     proxy_list.append(proxy)
         return proxy_list
 
@@ -181,18 +193,18 @@ class ProxySpider(object):
             proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
             for proxy in self.good_proxy:
                 print("Write %s to proxy_list_good.txt\n" % proxy.getAddress())
-                proxy_file.write('%-30s%-30s%-30s%-30s\n'
-                                 % (proxy.getAddress(), proxy.getPort(), proxy.getCategory(), proxy.getAnon()))
+                # proxy_file.write('%-30s%-30s%-30s%-30s\n'
+                #                  % (proxy.getAddress(), proxy.getPort(), proxy.getCategory(), proxy.getAnon()))
                 conn = RedisClient()
                 conn.add(proxy)
                 #insertIPinfo(proxy)
 
-        with open('./file/'+BAD_OUTPUT_FILE, "w+") as proxy_file:
-            proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
-            for proxy in self.bad_proxy:
-                print("Write %s to proxy_list_bad.txt\n" % proxy.getAddress())
-                proxy_file.write('%-30s%-30s%-30s%-30s\n'
-                                 % (proxy.getAddress(), proxy.getPort(), proxy.getCategory(), proxy.getAnon()))
+        # with open('./file/'+BAD_OUTPUT_FILE, "w+") as proxy_file:
+        #     proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
+        #     for proxy in self.bad_proxy:
+        #         print("Write %s to proxy_list_bad.txt\n" % proxy.getAddress())
+        #         proxy_file.write('%-30s%-30s%-30s%-30s\n'
+        #                          % (proxy.getAddress(), proxy.getPort(), proxy.getCategory(), proxy.getAnon()))
 
     """一个线程用于抓取，多个线程用于测试"""
     def run(self):       
@@ -214,5 +226,21 @@ def run_spider():
     spider.run()
 
 
+def test_fetch():
+    spider = ProxySpider()
+    for site in PROXY_SITES_BY_XPATH[1]['urls']:
+        resp = spider._fetch(site)
+        if resp is not None and resp.status_code == 200:
+            print('Success', site)
+            list = spider._extract_by_xpath(resp, PROXY_SITES_BY_XPATH[1]['ip_xpath'],
+                                     PROXY_SITES_BY_XPATH[1]['port_xpath'],
+                                     PROXY_SITES_BY_XPATH[1]['anon_xpath'],
+                                     PROXY_SITES_BY_XPATH[1]['cat_xpath'],
+                                     PROXY_SITES_BY_XPATH[1]['verify'])
+            for l in list:
+                print(l)
+
+
 if __name__ == "__main__":
     run_spider()
+    # test_fetch()

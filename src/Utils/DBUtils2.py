@@ -10,7 +10,7 @@ def insertWebsiteInfo(ip,url,method,statuscode,header):
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "insert into Saves (ip, url, method, statuscode, header, time) values ('%s', '%s', '%s', '%d' ,'%s','%s');" \
-          % (ip,url,method,statuscode,header,time.asctime())
+          % (ip, url, method, statuscode, header, time.asctime())
     cursor.execute(sql)
     conn.commit()
     return
@@ -87,6 +87,9 @@ def resetDatabases():
         cursor = conn.cursor()
         sql = "delete from Proxy_Platform.Saves where idSaves !=0;"
         sql += "alter table Proxy_Platform.Saves auto_increment=1;"
+        cursor.execute(sql)
+        sql = "delete from Proxy_Platform.Session where idSession !=0;"
+        sql += "alter table Proxy_Platform.Session auto_increment=1;"
         cursor.execute(sql)
         conn.commit()
         conn.close()

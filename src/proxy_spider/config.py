@@ -28,20 +28,20 @@ PROXY_SITES_BY_REGX = {
 
 # 需要利用xpath 定位代理IP 的站点
 PROXY_SITES_BY_XPATH = [
+    # {
+    #     'urls': ['http://www.66ip.cn/%s.html' % page for page in list(range(2, 11))],
+    #     'ip_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[1]/text()",
+    #     'port_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[2]/text()",
+    #     'anon_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[4]/text()",
+    #     'cat_xpath': "",
+    #     'verify':"¸ßÄä´úÀí"
+    # },
     {
-        'urls': ['http://www.66ip.cn/%s.html' % page for page in list(range(2, 11))],
-        'ip_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[1]/text()",
-        'port_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[2]/text()",
-        'anon_xpath': ".//*[@id='main']/div/div[1]/table/tr[position()>1]/td[4]/text()",
-        'cat_xpath': "",
-        'verify':"¸ßÄä´úÀí"
-    },
-    {
-        'urls': ['http://www.mimiip.com/gngao/%s' % page for page in range(2, 10)],
-        'ip_xpath': ".//table[@class='list']/tbody/tr/td[1]/text()",
-        'port_xpath': ".//table[@class='list']/tbody/tr/td[2]/text()",
-        'anon_xpath':".//table[@class='list']/tbody/tr/td[4]/text()",
-        'cat_xpath':".//table[@class='list']/tbody/tr/td[5]/text()",
+        'urls': ['http://www.mimiip.com/gngao/%s' % page for page in range(1, 10)],
+        'ip_xpath': "//tr/td[1]/text()",
+        'port_xpath': "//tr/td[2]/text()",
+        'anon_xpath':"//tr/td[4]/text()",
+        'cat_xpath':"//tr/td[5]/text()",
         'verify':"高匿"
     },
     {
