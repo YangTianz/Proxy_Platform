@@ -62,7 +62,7 @@ def addSession(ip):
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     name = name = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-    sql = "insert into Session (ip, name) values ('%s', '%s');" \
+    sql = "insert into Session (ip, name) values (\"%s\", \"%s\");" \
           % (ip, name)
     cursor.execute(sql)
     conn.commit()
