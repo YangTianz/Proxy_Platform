@@ -88,6 +88,9 @@ def resetDatabases():
         sql = "delete from Proxy_Platform.Saves where idSaves !=0;"
         sql += "alter table Proxy_Platform.Saves auto_increment=1;"
         cursor.execute(sql)
+        sql = "delete from Proxy_Platform.Session where idSession !=0;"
+        sql += "alter table Proxy_Platform.Session auto_increment=1;"
+        cursor.execute(sql)
         conn.commit()
         conn.close()
 
