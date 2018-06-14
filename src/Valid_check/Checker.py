@@ -17,6 +17,22 @@ verifyWeb = ["http://httpbin.org/ip",
              "https://www.douban.com",
              "https://stackoverflow.com"]
 
+"""添加验证网页"""
+def addVerify(web):
+    if web not in verifyWeb:
+        verifyWeb.append(web)
+    else:
+        print("该网站已存在")
+
+
+"""删除验证网页"""
+def delVerify(web):
+    if web in verifyWeb:
+        verifyWeb.remove(web)
+    else:
+        print("该网站不存在")
+
+
 """
 可用性验证函数
 IP：str，需要验证的IP，格式为"IP:port"

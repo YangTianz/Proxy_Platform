@@ -2,6 +2,7 @@
 """
 headers支持特定网站验证
 """
+headers = {}
 
 zhihu = {
     "authority": "www.zhihu.com",
@@ -14,4 +15,7 @@ zhihu = {
     "upgrade-insecure-requests": "1",
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36"
 }
+
+headers["zhihu"] = zhihu
+
 
