@@ -4,12 +4,13 @@ import re
 import json
 import threading
 from Schedule.IP_Queue import *
-from http import cookiejar
 import queue
-from Schedule.Visit_Main import visit
 from queue import Queue
-from urllib import parse
-
+from http import cookiejar
+from urllib import request,error,parse
+import time
+import socket
+from Utils import DBUtils
 
 
 class Scheduler:
@@ -47,54 +48,44 @@ class Scheduler:
                 return None
 
         DBUtils.insertWebsiteInfo(getURL(url))
-
-
         Result_list.append("No error")
 
+        '''
+        if(session!=False):
+            mysession=getsession[session]
+            Result_list.append({'session':})
+        '''
 
-        for i in range(request_con):
-
-            while (True):
-                try:
-                    proxy_ip = ipQueue.get_ip(block = False)  # 从可用ip队列中取出首ip,取出失败则将sleep几秒
-                    break
-                except queue.Empty:
-                    pass
-                time.sleep(3)   #取出IP失败
-                if (count[0] >= Max_count[0]):
-                    Result_list=["超出出错次数"]
-                    return None
-            t = threading.Thread(target=Visit_Thread, args=(i+1,url, headers, method,time_max, time_delay, proxy_ip,cookie,timeout,session,data))
+        Thread_count=1
+        while(Thread_count<=request_con):
+            proxy_ip = ipQueue.get_ip(block = False)
+            t = threading.Thread(target=Visit_Thread, args=(Thread_count,url, headers, method,time_max, time_delay, proxy_ip,cookie,timeout,data))
             t.start()
+            Thread_count+=1
 
-        Thread_count=request_con
         waittime = time.time()
         while(True):
 
-            try:
+            if(Failed_Thread.qsize()!=0):
                 Failed_Thread.get(block=False)
-                Thread_count=Thread_count+1
-                while (True):
-                    try:
-                        proxy_ip = ipQueue.get_ip(block=False)  # 从可用ip队列中取出首ip,取出失败则将sleep几秒
-                        break
-                    except queue.Empty:
-                        pass
-                    time.sleep(3)  # 取出IP失败
+                try:
+                    proxy_ip = ipQueue.get_ip(block=False)
+                    break
+                except queue.Empty:
+                    Result_list=["URL Failed"]
+                    return None
                 t = threading.Thread(target=Visit_Thread,
-                                     args=(Thread_count, url, headers,method, time_max, time_delay, proxy_ip,cookie, timeout,session,data))
+                                     args=(Thread_count, url, headers,method, time_max, time_delay, proxy_ip,cookie, timeout,data))
                 t.start()
-            except queue.Empty:
+                Thread_count += 1
+            else:
                 if(time.time()-waittime>=60):
                     print("I'm alive _(:з」∠)_")
                     waittime=time.time()
-                time.sleep(10)
+                time.sleep(5)
             if(Finish_count[0] >= request_con):
                 break
 
-        if(count[0]>=Max_count[0]):
-            Result_list=["超出出错次数"]
-            return None
 
 
     def get_result(self):
@@ -107,7 +98,7 @@ class Scheduler:
 
 
 
-def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,timeout,session,data): #任务线程
+def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,timeout,data): #任务线程
     global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex
     i=0
     Wrong = 0
@@ -129,17 +120,7 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
             i = i + 1
 
             mutex.acquire()
-            if(session):
-                return_result={
-                    "ip":proxy_ip,
-                    "response":result
-                }
-                Result_list.append(return_result)
-            else:
-                return_result={
-                    "response":result
-                }
-                Result_list.append(return_result)
+            Result_list.append(result)
             mutex.release()
 
             if(i==time_max):
@@ -153,7 +134,54 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
             return
 
 
+def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="get",data=None):#单次访问网站
+    socket.setdefaulttimeout(timeout)
+    for key in proxy_ip:
+        ip = proxy_ip[key]
+        array=ip.split(":")
+        address=array[0]
+        port=int(array[1])
+    try:
+        proxy_handler = request.ProxyHandler(proxy_ip)  #创建代理处理器
+        cookie_handler = request.HTTPCookieProcessor(cookie)    #创建cookie处理器
 
+        opener = request.build_opener(proxy_handler,cookie_handler)     #创建opener
+
+        if(method=="get"):
+            if(data==None):
+                RequestA = request.Request(url)
+            else:
+                data=parse.urlencode(data)
+        elif(method=="post"):
+            if(data==None):
+                RequestA = request.Request(url)
+            else:
+                RequestA = request.Request(url,data=data)
+
+        for key in headers.keys():
+            RequestA.add_header(key,headers[key])    #添加报文头部
+
+        response_time = time.time()
+        Response = opener.open(RequestA) #访问
+        response_time = time.time() - response_time #响应时间
+        status = str(Response.code)  #状态码
+        response_header = Response.info()   #返回header
+        webid=int(DBUtils.getidByURL(getURL(url)))  #返回网址id
+        ipid=int(DBUtils.getIPID(address, port))  #返回ip id
+
+        DBUtils.genResInfo(webid, ipid, int(response_time), method, int(status), response_header)
+
+
+
+    except error.URLError as e:
+        sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + url + " failed. "
+        print(sentence+"\n"+ str(e.reason))
+        return False
+    sentence = time.asctime(time.localtime(time.time())) + " use " + ip + " requested " + Response.geturl() + \
+               " success. Status:" + status +". Old url: "+url
+    print(sentence)
+    Response=Response.read().decode()
+    return Response
 
 
 def getURL(url):
