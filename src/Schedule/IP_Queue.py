@@ -11,7 +11,6 @@ class IP_Queue:#创建可用IP队列
 
         conn = redisdb.RedisClient()
         ip_list= conn.random(size)
-
         for ip in ip_list:
             address=ip.getAddress()
             port=ip.getPort()

@@ -166,7 +166,7 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
         status = str(Response.code)  #状态码
         response_header = Response.info()   #返回header
 
-        DBUtils2.insertWebsiteInfo(ip,url,method,int(status),response_header)
+        DBUtils2.insertWebsiteInfo(ip,getURL(url),method,int(status),response_header)
 
 
     except error.URLError as e:

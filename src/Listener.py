@@ -59,7 +59,7 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
                 number=number+1
                 continue
             else:
-                session_list.append(str(i['ip']))
+                session_list.append(i['session'])
                 response_list.append(i['response'])
             number = number + 1
 
@@ -82,6 +82,6 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
 
 if __name__ == '__main__':
     #run_spider()  # 启动爬虫爬可用IP
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000,debug=True)
 
 
