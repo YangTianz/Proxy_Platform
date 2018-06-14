@@ -9,10 +9,14 @@ class IP_Queue:#创建可用IP队列
 
     def __init__(self,size,session):
         self.__ip_queue=Queue()
-        if(session!=False) or (session!=1):
+        self.__myip=1
+        if(session!=False) and (session!=True):
             self.__myip=DBUtils2.getIP(session)
+            if(self.__myip==None):
+                self.__myip="?"
             self.__ip_queue.put(self.__myip)
             return
+
         conn = redisdb.RedisClient()
         ip_list= conn.random(size)
         for ip in ip_list:
@@ -36,5 +40,7 @@ class IP_Queue:#创建可用IP队列
     def size(self):
         return self.__ip_queue.qsize()
     def checkip(self):
-        if (self.__myip == None):
+        if (self.__myip == "?"):
+            print(self.__myip)
             return None
+        return self.__myip

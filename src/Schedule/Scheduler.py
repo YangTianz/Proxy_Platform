@@ -27,6 +27,7 @@ class Scheduler:
         Finish_count = [0]
         Max_count = [request_con * time_max]
         Result_list = []
+        Session=session
 
 
         if(request_con<5):
@@ -101,7 +102,7 @@ class Scheduler:
 
 
 def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,timeout,data): #任务线程
-    global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex,Session
+    global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex,Session,ipQueue
     i=0
     Wrong = 0
     myresult=[]
@@ -130,7 +131,7 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
                 if(Session!=False):
                     mydict['session']=Session
                 if(Session==1):
-                    mydict['ip']=proxy_ip
+                    mydict['ip']=(ipQueue.checkip()).get()
                 Result_list.append(mydict)
                 mutex.release()
                 return

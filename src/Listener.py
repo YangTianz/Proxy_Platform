@@ -21,7 +21,7 @@ def listener():
     session=request1.args.get('session',False)
     if(session=="True"):
         session=True
-    elif(session=="False"):
+    else:
         session=False
     cookies=request1.args.get('cookies',None)
     timeout=request1.args.get('timeout',20)
@@ -51,8 +51,9 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
         return json.dumps(result)
 
     session = result.get_session()
-    if(session==1):
-        session=DBUtils2.addSession(result_list['ip'])
+    if(session==True):
+        print(result_list[1]['ip'])
+        session=DBUtils2.addSession(result_list[1]['ip'])
     if (session):
         response_list = []
         number = 0
@@ -76,7 +77,6 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
             number = number + 1
         Result = {"response": response_list}
     return json.dumps(Result)
-
 
 
 
