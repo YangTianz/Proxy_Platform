@@ -9,6 +9,7 @@ run_spider():抓取并测试代理ip是否可以使用 抓取、测试网址均�
 直接运行此文件将运行run_spider()
 """
 from Utils.DBUtils import insertIPinfo
+from Utils.redisdb import RedisClient
 from Utils.IP import IP
 import requests
 import queue
@@ -182,7 +183,9 @@ class ProxySpider(object):
             for proxy in self.good_proxy:
                 print("Write %s to proxy_list_good.txt\n" % proxy.getAddress())
                 proxy_file.write('%-30s%-30s%-30s\n' % (proxy.getAddress(), proxy.getPort(), proxy.getCategory()))
-                insertIPinfo(proxy)
+                conn = RedisClient()
+                conn.add(proxy)
+                #insertIPinfo(proxy)
 
         with open('./'+BAD_OUTPUT_FILE, "w+") as proxy_file:
             proxy_file.write("%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type'))
