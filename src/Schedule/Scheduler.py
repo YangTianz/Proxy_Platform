@@ -107,7 +107,7 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
     Wrong = 0
     myresult=[]
     while(i<time_max):
-        result=visit(url,headers,proxy_ip,cookie,timeout,method,data)
+        result=visit(url,headers,proxy_ip,cookie,timeout,method,data,Session)
         if (result==False):
             Wrong=Wrong+1
             if (Wrong == 3):
@@ -130,7 +130,7 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
                 mydict['response']=myresult
                 if(Session!=False):
                     mydict['session']=Session
-                if(Session==1):
+                if(Session==True):
                     mydict['ip']=str(proxy_ip)
                 Result_list.append(mydict)
                 mutex.release()
@@ -141,12 +141,11 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
             return
 
 
-def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="get",data=None):#单次访问网站
+def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="get",data=None,session=False):#单次访问网站
     socket.setdefaulttimeout(timeout)
     for key in proxy_ip:
         ip = proxy_ip[key]
         array=ip.split(":")
-    print(proxy_ip)
     try:
         proxy_handler = request.ProxyHandler(proxy_ip)  #创建代理处理器
         cookie_handler = request.HTTPCookieProcessor(cookie)    #创建cookie处理器
@@ -184,6 +183,9 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
                " success. Status:" + status +". Old url: "+url
     print(sentence)
     Response=Response.read().decode()
+
+    if(session!=False):
+        return{"web":Response,"cookies":str(cookie)}
     return Response
 
 
