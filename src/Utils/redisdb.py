@@ -86,6 +86,4 @@ class RedisClient(object):
         a = IP(proxy[0],int(proxy[1]))
         return a
 
-conn = RedisClient()
-for i in conn.random(5):
-    i.show()
+
