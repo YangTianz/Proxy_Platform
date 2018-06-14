@@ -75,8 +75,8 @@ def getIP(name):
     cursor.execute(sql)
     m = cursor.fetchone()
     conn.close()
-    m = m[0]
     if m != None:
+        m = m[0]
         m = str.split(m,':')
         a = IP(m[0], int(m[1]))
         return a
