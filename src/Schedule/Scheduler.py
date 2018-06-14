@@ -11,8 +11,6 @@ from urllib import request,error,parse
 import time
 import socket
 from Utils import DBUtils2
-
-
 class Scheduler:
 
     def __init__(self,url,headers={'User-agent':'Mozilla/5.0'},method="get",data=None,time_max=1,time_delay=1,request_con=1,
@@ -29,12 +27,15 @@ class Scheduler:
         Finish_count = [0]
         Max_count = [request_con * time_max]
         Result_list = []
-        Session=session
+
 
         if(request_con<5):
             Max_count[0]=5 * time_max     #初始化报错最大值
 
-        ipQueue = IP_Queue(Max_count[0])  # 初始化可用ip队列
+        ipQueue = IP_Queue(Max_count[0],session)  # 初始化可用ip队列
+        if(ipQueue.checkip()==None):
+            Result_list.append("session编号错误")
+            return None
 
         if not re.match(r'^https?:/{2}\w.+$', url):  # 若url不合法则返回error
             print("error")
@@ -46,16 +47,14 @@ class Scheduler:
             except ValueError:
                 Result_list.append("data的JSON格式错误")
                 return None
-
+        if(session!=False) and (request_con!=1):
+            Result_list.append("session功能时request_con为1")
+            return None
 
         #DBUtils.insertWebsiteInfo(getURL(url))
         Result_list.append("No error")
 
-        '''
-        if(session!=False):
-            mysession=getsession[session]
-            Result_list.append({'session':})
-        '''
+
 
         Thread_count=1
         while(Thread_count<=request_con):
@@ -74,6 +73,8 @@ class Scheduler:
                     break
                 except queue.Empty:
                     Result_list=["URL Failed"]
+                    if(session!=False) or (session!=1):
+                        Result_list = ["This session ip fail to request"]
                     return None
                 t = threading.Thread(target=Visit_Thread,
                                      args=(Thread_count, url, headers,method, time_max, time_delay, proxy_ip,cookie, timeout,data))
@@ -100,15 +101,15 @@ class Scheduler:
 
 
 def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,timeout,data): #任务线程
-    global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex
+    global count,Max_count,Finish_count,Result_list,Failed_Thread,mutex,Session
     i=0
     Wrong = 0
+    myresult=[]
     while(i<time_max):
         result=visit(url,headers,proxy_ip,cookie,timeout,method,data)
         if (result==False):
             Wrong=Wrong+1
             if (Wrong == 3):
-
                 mutex.acquire()
                 count[0] = count[0] + 1
                 Failed_Thread.put(1)
@@ -119,14 +120,18 @@ def Visit_Thread(index,url,headers,method,time_max,time_delay,proxy_ip,cookie,ti
         else:
             Wrong = 0
             i = i + 1
-
-            mutex.acquire()
-            Result_list.append(result)
-            mutex.release()
+            myresult.append(result)
 
             if(i==time_max):
                 mutex.acquire()
                 Finish_count[0]=Finish_count[0]+1
+                mydict={}
+                mydict['response']=myresult
+                if(Session!=False):
+                    mydict['session']=Session
+                if(Session==1):
+                    mydict['ip']=proxy_ip
+                Result_list.append(mydict)
                 mutex.release()
                 return
             time.sleep(time_delay)

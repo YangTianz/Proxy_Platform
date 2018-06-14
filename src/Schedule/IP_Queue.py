@@ -2,13 +2,17 @@
 
 from queue import Queue
 from Utils import redisdb
+from Utils import DBUtils2
 
 
 class IP_Queue:#创建可用IP队列
 
-    def __init__(self,size):
+    def __init__(self,size,session):
         self.__ip_queue=Queue()
-
+        if(session!=False) or (session!=1):
+            self.__myip=DBUtils2.getIP(session)
+            self.__ip_queue.put(self.__myip)
+            return
         conn = redisdb.RedisClient()
         ip_list= conn.random(size)
         for ip in ip_list:
@@ -31,3 +35,6 @@ class IP_Queue:#创建可用IP队列
 
     def size(self):
         return self.__ip_queue.qsize()
+    def checkip(self):
+        if (self.__myip == None):
+            return None
