@@ -129,5 +129,3 @@ class RedisClient(object):
             a.setCategory(proxy[2])
         return a
 
-conn = RedisClient()
-print(conn.ipstatus())
