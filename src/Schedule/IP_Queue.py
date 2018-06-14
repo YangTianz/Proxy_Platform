@@ -1,14 +1,17 @@
 # -*- coding: UTF-8 -*-
 
 from queue import Queue
-from Utils import DBUtils
+from Utils import redisdb
 
 
 class IP_Queue:#创建可用IP队列
 
     def __init__(self,size):
         self.__ip_queue=Queue()
-        ip_list= DBUtils.getIPs(size)
+
+        conn = redisdb.RedisClient()
+        ip_list= conn.random(size)
+
         for ip in ip_list:
             address=ip.getAddress()
             port=ip.getPort()
