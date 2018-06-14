@@ -129,7 +129,4 @@ class RedisClient(object):
         if len(proxy)>2:
             a.setCategory(proxy[2])
         return a
-<<<<<<< HEAD
-=======
 
->>>>>>> 10d81bda03651adbfbd19ab7a523524334c3db1d
