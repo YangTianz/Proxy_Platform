@@ -20,7 +20,7 @@ class RedisClient(object):
         随机获取有效代理，首先尝试获取最高分数代理，如果不存在，按照排名获取，否则异常
         :return: 随机代理
         """
-        result = self.db.zrevrange(REDIS_KEY, 19, 100)
+        result = self.db.zrevrange(REDIS_KEY, 10, 100)
         list = sample(result, k)
         ips = []
         for i in list:
