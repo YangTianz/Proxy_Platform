@@ -17,7 +17,6 @@ def thread(url):
     mutex.acquire()
     x[0]=x[0]+10
     print(x[0])
-    print(text)
     print(url)
     mutex.release()
 
@@ -35,15 +34,16 @@ if __name__ == '__main__' :
             url.append("https://github.com/")
             url.append("https://weibo.com/")
 
-            myurl = "http://localhost/api/?url="
+            myurl = "http://0.0.0.0:8000/api/?url="
             list1=[]
-            for i in range(100):
+            for i in range(150):
                 r=int(random.random()*len(url))
                 aurl=url[r]
                 t=threading.Thread(target=thread,args=(aurl,))
                 list1.append(t)
             for i in list1:
                 i.start()
+            for i in list1:
                 i.join()
 
 
