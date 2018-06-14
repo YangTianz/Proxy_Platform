@@ -14,15 +14,12 @@ class RedisClient(object):
         随机获取有效代理，首先尝试获取最高分数代理，如果不存在，按照排名获取，否则异常
         :return: 随机代理
         """
-
         result = self.db.zrevrange(REDIS_KEY, 0, 100)
         list = sample(result, k)
         ips = []
         for i in list:
-            i = str.split(i,":")
-            ips.append(IP(i[0],int(i[1])))
+            ips.append(self.translatetoIP(i))
         return ips
-
 
 
     def add(self, IP, score=INITIAL_SCORE):
@@ -79,13 +76,15 @@ class RedisClient(object):
         proxy = IP.getAddress()
         proxy += ':'
         proxy += str(IP.getPort())
+        if IP.getCategory()!="":
+            proxy += ':'
+            proxy += str(IP.getCategory())
         return proxy
 
     def translatetoIP(self, proxy):
         proxy = str.split(proxy,':')
         a = IP(proxy[0],int(proxy[1]))
+        if len(proxy)>2:
+            a.setCategory(proxy[2])
         return a
 
-conn = RedisClient()
-for i in conn.random(5):
-    i.show()
