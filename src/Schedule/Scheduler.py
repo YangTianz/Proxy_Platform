@@ -191,3 +191,5 @@ def getURL(url):
     newurl = parse.urlparse(url).netloc
     url = headurl + "://" + newurl
     return url
+
+#a = re.findall(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d*",s)
