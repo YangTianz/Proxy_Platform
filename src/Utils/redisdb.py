@@ -88,3 +88,7 @@ class RedisClient(object):
             a.setCategory(proxy[2])
         return a
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> e0d13e63ca6f370b16cb6ee024e7a91e10224cef

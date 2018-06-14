@@ -3,6 +3,7 @@ from flask import Flask, request as request1
 from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
 from Valid_check import Checker
+from Utils import DBUtils
 
 
 
@@ -81,6 +82,6 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
 
 if __name__ == '__main__':
     #run_spider()  # 启动爬虫爬可用IP
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=8000)
 
 
