@@ -16,6 +16,6 @@ zhihu = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36"
 }
 
-headers["zhihu"] = zhihu
+headers["https://www.zhihu.com"] = zhihu
 
 

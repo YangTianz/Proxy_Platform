@@ -4,7 +4,7 @@ import gevent
 import threading
 from gevent import monkey;monkey.patch_all()
 from Utils.redisdb import RedisClient
-from Valid_check.Headers import *
+from Valid_check.Headers import headers
 from proxy_spider.proxyspider import run_spider
 
 requests.adapters.DEFAULT_RETRIES = 5       #设置最大重连次数
@@ -52,8 +52,8 @@ def validIP(IP,web,ips,IPct):
 
     '''开始校验'''
     try:
-        if web == "https://www.zhihu.com":
-            r = requests.get(web, proxies=proxies, headers=zhihu, timeout=(10, 5))      # 知乎需要header，否则一个也过不了
+        if headers[web]:
+            r = requests.get(web, proxies=proxies, headers=headers[web], timeout=(10, 5))      # 知乎需要header，否则一个也过不了
         else:
             r = requests.get(web, proxies=proxies, timeout=(10, 5))         # 一般情况
 
@@ -88,7 +88,6 @@ def runCheck():
             js = []  # 对每个IP分别验证每个网站
             num = IPct.count()  # 库中IP数量
             ip = IPct.batch(0, num)  # 获取数量
-
 
             """对当前所有库中IP进行验证"""
             for ips in ip:
