@@ -68,18 +68,15 @@ def addSession(ip):
     conn.commit()
     return name;
 
-def getIP(name):
+def getIP(name): # return IP()     111.111.111.111:80
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select ip from Session where name='%s';" % name
     cursor.execute(sql)
     m = cursor.fetchone()
     conn.close()
-    if m != None:
-        m = m[0]
-        m = str.split(m,':')
-        a = IP(m[0], int(m[1]))
-        return a
+    if m!=None:
+        return m[0]
     else:
         return
 
