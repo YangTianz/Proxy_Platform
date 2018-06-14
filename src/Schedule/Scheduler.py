@@ -146,6 +146,7 @@ def visit(url,headers,proxy_ip,cookie=cookiejar.CookieJar(),timeout=20,method="g
     for key in proxy_ip:
         ip = proxy_ip[key]
         array=ip.split(":")
+    print(proxy_ip)
     try:
         proxy_handler = request.ProxyHandler(proxy_ip)  #创建代理处理器
         cookie_handler = request.HTTPCookieProcessor(cookie)    #创建cookie处理器
@@ -191,3 +192,4 @@ def getURL(url):
     newurl = parse.urlparse(url).netloc
     url = headurl + "://" + newurl
     return url
+

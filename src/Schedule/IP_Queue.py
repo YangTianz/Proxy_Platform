@@ -41,6 +41,5 @@ class IP_Queue:#创建可用IP队列
         return self.__ip_queue.qsize()
     def checkip(self):
         if (self.__myip == "?"):
-            print(self.__myip)
             return None
         return self.__myip

@@ -52,7 +52,6 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
 
     session = result.get_session()
     if(session==True):
-        print(result_list[1]['ip'])
         session=DBUtils2.addSession(result_list[1]['ip'])
     if (session):
         response_list = []
