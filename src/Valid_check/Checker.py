@@ -1,9 +1,11 @@
 import requests, socket
 import time
 import gevent
+import threading
 from gevent import monkey;monkey.patch_all()
 from Utils.redisdb import RedisClient
 from Valid_check.Headers import *
+from proxy_spider.proxyspider import run_spider
 
 requests.adapters.DEFAULT_RETRIES = 5       #设置最大重连次数
 socket.setdefaulttimeout(20)        #设置默认超时时间
@@ -65,24 +67,31 @@ def runCheck():
     使用gevent，内置事件驱动的异步
     """
     while 1:
+        """对所有目标网页一次依次进行验证"""
         for web in verifyWeb:
             js = []  # 对每个IP分别验证每个网站
             num = IPct.count()  # 库中IP数量
             ip = IPct.batch(0, num)  # 获取数量
 
+
+            """对当前所有库中IP进行验证"""
             for ips in ip:
                 IP = ips.getAddress() + ":" + str(ips.getPort())
                 t = gevent.spawn(validIP, IP, web, ips, IPct)
                 js.append(t)
 
             gevent.joinall(js)
+            """验证后情况"""
             num = IPct.count()  # 库中IP数量
             print("当前验证网站为：%s" % web)
             print("当前剩余可用IP：%s" % num)
 
             time.sleep(10)
 
-        # =================开启新线程爬取=====================
+        # =================当库中IP数量不足时，开启新线程爬取=================
         num = IPct.count()  # 库中IP数量
+        if num < 300:
+            s = threading.Thread(target=run_spider(), args=())
+            s.start()
         time.sleep(30)
 
