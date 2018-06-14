@@ -102,19 +102,20 @@ class RedisClient(object):
         return self.db.zcard(REDIS_KEY)
 
     def ipstatus(self):
-        print("当前 IP 总数：", self.count())
-        print("IP 分数分布: (越高越好)")
-        print("1 ~ 10:  ", self.db.zcount(REDIS_KEY,1,10))
-        print("11 ~ 20: ", self.db.zcount(REDIS_KEY, 11, 20))
-        print("21 ~ 30: ", self.db.zcount(REDIS_KEY, 21, 30))
-        print("31 ~ 40: ", self.db.zcount(REDIS_KEY, 31, 40))
-        print("41 ~ 50: ", self.db.zcount(REDIS_KEY, 41, 50))
-        print("51 ~ 60: ", self.db.zcount(REDIS_KEY, 51, 60))
-        print("61 ~ 70: ", self.db.zcount(REDIS_KEY, 61, 70))
-        print("71 ~ 80: ", self.db.zcount(REDIS_KEY, 71, 80))
-        print("81 ~ 90: ", self.db.zcount(REDIS_KEY, 81, 90))
-        print("91 ~ 100:", self.db.zcount(REDIS_KEY, 91, 100))
-        print("只有分数大于 20 的 IP 地址会被使用")
+        result = "当前 IP 总数："+ str(self.count()) + "\n"
+        result += "IP 分数分布: (越高越好)\n"
+        result += "1 ~ 10:  " + str(self.db.zcount(REDIS_KEY,1,10)) + "\n"
+        result += "11 ~ 20: " + str(self.db.zcount(REDIS_KEY, 11, 20)) + "\n"
+        result += "21 ~ 30: " + str(self.db.zcount(REDIS_KEY, 21, 30)) + "\n"
+        result += "31 ~ 40: " + str(self.db.zcount(REDIS_KEY, 31, 40)) + "\n"
+        result += "41 ~ 50: " + str(self.db.zcount(REDIS_KEY, 41, 50)) + "\n"
+        result += "51 ~ 60: " + str(self.db.zcount(REDIS_KEY, 51, 60)) + "\n"
+        result += "61 ~ 70: " + str(self.db.zcount(REDIS_KEY, 61, 70)) + "\n"
+        result += "71 ~ 80: " + str(self.db.zcount(REDIS_KEY, 71, 80)) + "\n"
+        result += "81 ~ 90: " + str(self.db.zcount(REDIS_KEY, 81, 90)) + "\n"
+        result += "90 ~ 100:" + str(self.db.zcount(REDIS_KEY, 91, 100)) + "\n"
+        result +="只有分数大于 20 的 IP 地址会被使用"
+        return result
 
     def translatetoproxy(self, IP):
         proxy = IP.getAddress()
@@ -131,5 +132,4 @@ class RedisClient(object):
         if len(proxy)>2:
             a.setCategory(proxy[2])
         return a
-
 

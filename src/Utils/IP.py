@@ -10,7 +10,12 @@ class IP:
         self.__location = ""
         self.__categ = ""
 
-    
+    def get(self):
+        re = self.__address
+        re += ':'
+        re += str(self.__port)
+        return re
+
     def getAddress(self):
         return self.__address
 
