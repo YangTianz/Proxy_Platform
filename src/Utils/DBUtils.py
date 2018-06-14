@@ -2,12 +2,7 @@
 from Utils.IP import *
 import time
 import pymysql
-
-host = '111.230.249.201'
-port = 3306
-user = 'test'
-passwd = 'Sustech15'
-db = 'Proxy_Platform'
+from Utils.settings import MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB
 
 """   --------------------说明--------------------------
 void    showAllIP():
@@ -54,7 +49,7 @@ void    resetDatabases():
 # --------------ipPool table-------------------
 # 输出所有的IP信息
 def showAllIP():
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from ipPool;"
     cursor.execute(sql)
@@ -70,7 +65,7 @@ def showAllIP():
     return ip_list
 
 def showStatus():
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from ipPool;"
     cursor.execute(sql)
@@ -88,7 +83,7 @@ def showStatus():
 def changeIP_AN(Anonmyous,Address,Port):
     id = getIPID(Address, int(Port))
 
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql="update ipPool set IsAnon='%d' where idIP=%d" % (Anonmyous, id)
     cursor.execute(sql)
@@ -98,7 +93,7 @@ def changeIP_AN(Anonmyous,Address,Port):
 
 # 输入一个IP的id，返回一个IP类
 def getIPInfo(id):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from ipPool where idIP=%d;" % id
     cursor.execute(sql)
@@ -115,7 +110,7 @@ def getIPInfo(id):
 
 # 输入一个IP的id，在数据库中删除这个IP的信息
 def deleteIPinfo(id):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "delete from ipPool where idIP=%d" % id
     cursor.execute(sql)
@@ -124,7 +119,7 @@ def deleteIPinfo(id):
 
 # 在数据库中新增一条IP信息，需要输入的有 地址、端口
 def insertIPinfo(IP):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from ipPool where Address='%s' and Port=%d " % (IP.getAddress() , IP.getPort())
     cursor.execute(sql)
@@ -141,7 +136,7 @@ def insertIPinfo(IP):
 
 # 通过输入IP的信息来获取IP地址，这个功能在后续需要修改ResponeseTime 数据库时会被用到（需要提供ip_id）
 def getIPID(Address, Port):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select idIP from Proxy_Platform.ipPool where Address = '%s' and Port = %d;" % (Address, Port)
     cursor.execute(sql)
@@ -152,7 +147,7 @@ def getIPID(Address, Port):
 # -------------------------------------Website table--------------------------------------------
 # 输出所有网页信息，包括URL和用户访问的时间
 def showAllWeb():
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from Websites;"
     cursor.execute(sql)
@@ -166,7 +161,7 @@ def showAllWeb():
 
 # 获取一个网页的信息
 def getWebsiteInfo(id):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from Websites where idWebsites=%d;" % id
     cursor.execute(sql)
@@ -176,7 +171,7 @@ def getWebsiteInfo(id):
 
 # 生成一个新的Website数据，只需要输入 URL，时间会自动生成 , 随后返回网站id
 def insertWebsiteInfo(url):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "insert into Websites (URL, Time) values ('%s', '%s');" \
           % (url , time.asctime())
@@ -190,7 +185,7 @@ def insertWebsiteInfo(url):
 
 # 删除记录
 def deleteWebsiteinfo(id):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "delete from Websites where idWebsites=%d" % id
     cursor.execute(sql)
@@ -199,7 +194,7 @@ def deleteWebsiteinfo(id):
 
 # 根据访问的网址获取id
 def getidByURL(url):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select idWebsites from Websites where URL = '%s'" % url
     cursor.execute(sql)
@@ -210,7 +205,7 @@ def getidByURL(url):
 # -----------------------------------ResponseTime----------------------------------------
 # 输出所有的Response信息
 def showAllRes():
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "select * from ResponseTime;"
     cursor.execute(sql)
@@ -225,7 +220,7 @@ def showAllRes():
 
 # 生成一条新纪录，记录指定i对指定网站的响应时间，以及返回信息
 def genResInfo(URLID, IPID, ResponseTime, Method, StatusCode, Header):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "insert into ResponseTime (URLid, ip_id, ResponseTime, Method, StatusCode, Header) "
     sql += "values (%d, %d, %d, '%s', %d, '%s');" \
@@ -236,7 +231,7 @@ def genResInfo(URLID, IPID, ResponseTime, Method, StatusCode, Header):
 
 # 根据 网站id 和  更改响应时间
 def updateResTimeByID(URLID, IPID, newtime):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "update ResponseTime set ResponseTime=%d where URLid=%d and ip_id=%d" \
         % (newtime, URLID, IPID)
@@ -246,7 +241,7 @@ def updateResTimeByID(URLID, IPID, newtime):
 
 # 根据 网站id 和 ip id 更改网站返回的信息，包括请求方式、状态吗、返回Header
 def updateResValueByID (URLID, IPID, Method, StatusCode, Header):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "update ResponseTime set Method='%s', StatusCode=%d, Header='%s' where URLid=%d and ip_id=%d" \
         % (Method, StatusCode, Header, URLID, IPID)
@@ -255,7 +250,7 @@ def updateResValueByID (URLID, IPID, Method, StatusCode, Header):
     conn.close()
 
 def deleteByID(URLID, IPID):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     sql = "delete from Proxy_Platform.ResponseTime where URLid=%d and ip_id=%d" \
         % (URLID, IPID)
@@ -267,7 +262,7 @@ def deleteByID(URLID, IPID):
 
 # 从数据库里随机取10个IP
 def getIPs(n):
-    conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
     cursor = conn.cursor()
     list = []
     for i in range(n):
@@ -294,7 +289,7 @@ def getIPs(n):
 def resetDatabases():
     op = input("Are you sure?y/n\n")
     if (op=='y'):
-        conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+        conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, passwd=MYSQL_PASSWORD, db=MYSQL_DB)
         cursor = conn.cursor()
         sql = "delete from Proxy_Platform.ipPool where idIP !=0;"
         sql += "alter table Proxy_Platform.ipPool auto_increment=1;"

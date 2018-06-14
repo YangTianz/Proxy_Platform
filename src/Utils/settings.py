@@ -9,6 +9,14 @@ REDIS_PASSWORD = 'Sustech15'
 
 REDIS_KEY = '0ProxyPlatform'
 
+
+
+MYSQL_HOST = REDIS_HOST
+MYSQL_PORT = 3306
+MYSQL_USER = 'test'
+MYSQL_PASSWORD = 'Sustech15'
+MYSQL_DB = 'Proxy_Platform'
+
 # 代理分数
 MAX_SCORE = 100
 MIN_SCORE = 0
