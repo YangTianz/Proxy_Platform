@@ -2,8 +2,8 @@
 from flask import Flask, request as request1
 from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
-from Valid_check import Checker
 from Utils import DBUtils
+from Utils import redisdb
 
 
 
@@ -21,7 +21,7 @@ def listener():
     session=request1.args.get('session',False)
     if(session=="True"):
         session=True
-    elif(session=="False"):
+    else:
         session=False
     cookies=request1.args.get('cookies',None)
     timeout=request1.args.get('timeout',20)
@@ -35,7 +35,8 @@ def listener():
 
 @app.route('/status')
 def status():
-    return DBUtils.showStatus()
+    r=redisdb.RedisClient()
+    return r.ipstatus()
 
 def get_result(url,headers,method,data,time_max,time_delay,request_con,session,timeout,cookie):
 
@@ -50,8 +51,9 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
         return json.dumps(result)
 
     session = result.get_session()
+    if(session==True):
+        session=DBUtils2.addSession(result_list[1]['ip'])
     if (session):
-        session_list = []
         response_list = []
         number = 0
         for i in result_list:
@@ -59,11 +61,10 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
                 number=number+1
                 continue
             else:
-                session_list.append(i['session'])
                 response_list.append(i['response'])
             number = number + 1
 
-        Result = {"response": response_list,"session":session_list}
+        Result = {"response": response_list,"session":session}
     else:
         response_list = []
         number = 0
@@ -71,11 +72,10 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
             if (number == 0):
                 number = number + 1
                 continue
-            response_list.append(i)
+            response_list.append(i['response'])
             number = number + 1
         Result = {"response": response_list}
     return json.dumps(Result)
-
 
 
 
