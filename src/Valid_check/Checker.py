@@ -2,10 +2,10 @@ import requests, socket
 import time
 import gevent
 import threading
-from gevent import monkey;monkey.patch_all()
 from Utils.redisdb import RedisClient
 from Valid_check.Headers import headers
 from proxy_spider.proxyspider import run_spider
+from gevent import monkey;monkey.patch_all()
 
 requests.adapters.DEFAULT_RETRIES = 5       #设置最大重连次数
 socket.setdefaulttimeout(20)        #设置默认超时时间
@@ -15,7 +15,7 @@ verifyWeb = ["http://httpbin.org/ip",
              "http://www.qq.com",
              "https://www.zhihu.com",
              "https://www.douban.com",
-             "https://stackoverflow.com"]
+             ]
 
 """添加验证网页"""
 def addVerify(web):
@@ -52,20 +52,18 @@ def validIP(IP,web,ips,IPct):
 
     '''开始校验'''
     try:
-        if headers[web]:
-            r = requests.get(web, proxies=proxies, headers=headers[web], timeout=(10, 5))      # 知乎需要header，否则一个也过不了
+        if web == "https://www.zhihu.com":
+            r = requests.get(web, proxies=proxies, headers=headers["https://www.zhihu.com"], timeout=(10, 5))      # 知乎需要header，否则一个也过不了
         else:
             r = requests.get(web, proxies=proxies, timeout=(10, 5))         # 一般情况
 
         if r.status_code == 200:
             back = r.elapsed.seconds        # 根据响应时间决定分数
             if back < 1:
-                IPct.increase(ips, 4)
-            elif 1 <= back < 3:
                 IPct.increase(ips, 3)
-            elif 3 <= back < 5:
+            elif 1 <= back < 3:
                 IPct.increase(ips, 2)
-            elif 5 <= back < 7:
+            elif 3 <= back < 5:
                 IPct.increase(ips, 1)
 
         else:
@@ -100,7 +98,7 @@ def runCheck():
             num = IPct.count()  # 库中IP数量
             print("当前验证网站为：%s" % web)
             print("当前剩余可用IP：%s" % num)
-
+            print(IPct.ipstatus())
             time.sleep(10)
 
         # =================当库中IP数量不足时，开启新线程爬取=================
@@ -110,3 +108,5 @@ def runCheck():
             s.start()
         time.sleep(30)
 
+if __name__ == "__main__":
+    runCheck()
