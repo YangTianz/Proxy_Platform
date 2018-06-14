@@ -193,3 +193,7 @@ def getURL(url):
     url = headurl + "://" + newurl
     return url
 
+<<<<<<< HEAD
+=======
+#a = re.findall(r"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d*",s)
+>>>>>>> 9d75b04ec3cae19f7277506a2327fbc18f0b9f09
