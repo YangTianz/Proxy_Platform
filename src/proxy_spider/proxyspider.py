@@ -186,8 +186,8 @@ class ProxySpider(object):
 
     """ 持久化可用代理IP """
     def output_proxy(self):
-        with open('./file/'+GOOD_OUTPUT_FILE, "w+") as proxy_file:
-            proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
+        # with open('./file/'+GOOD_OUTPUT_FILE, "w+") as proxy_file:
+        #     proxy_file.write("%-30s%-30s%-30s%-30s\n" % ('IP', 'Port', 'Type', 'Anon'))
             for proxy in self.good_proxy:
                 print("Write %s\n" % proxy.getAddress())
                 # proxy_file.write('%-30s%-30s%-30s%-30s\n'

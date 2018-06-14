@@ -23,11 +23,7 @@ def thread(url):
 
 
 if __name__ == '__main__' :
-    url = "http://localhost:8000/api/?url=http://www.baidu.com&&session=SXkQrytG"
-    response = request.urlopen(url)
-    text = response.read()
-    print(text)
-    '''
+
             url=[]
             url.append("https://www.etymonline.com/word/jack")
             url.append("https://www.baidu.com")
@@ -49,7 +45,7 @@ if __name__ == '__main__' :
             for i in list1:
                 i.start()
                 i.join()
-'''
+
 
 
 
