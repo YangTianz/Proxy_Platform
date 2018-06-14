@@ -2,7 +2,6 @@
 from flask import Flask, request as request1
 from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
-from Valid_check import Checker
 from Utils import DBUtils
 from Utils import redisdb
 
