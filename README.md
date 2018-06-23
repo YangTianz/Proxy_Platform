@@ -99,6 +99,22 @@ This component is based on an open source project on Github[1].
  The running output on console is shown in Fig.3. <br/>
 ![Fig. 3 running output](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/running_output.png)
 ### IP calibrator
+
+<p>Proxies check is designed to ensure that there are always several accessible IP that are in high-speed.</p>
+<p>We set a score for each IP. When an IP is added to database, we set it 20. And we check the IP by visiting some website and change scores according to whether they can successfully visit the website and their response time and current scores. Once get response, we divided the response time into different levels.
+</p>
+<p>The picture below shows our strategy. If there is a response, we change the score according to response time. Else, we change it according to current score.
+</p>
+
+![check1](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/check1.png)
+<p>
+Besides, we set other two timeout to control the speed. One is for connecting to servers’ socket, another is for response time after successfully connecting to servers. Both timeout are considered fail visiting.
+</p>
+<p>If the score of IP comes to 0, which shows it can not be used during current period and that usually means the socket is already closed. So it will be moved to another database and there is a thread to check the socket state. Once open they will be moved back.
+</p>
+<p>Waiting for a response is a waste of time, thus we use gevent library to make better use of this time. Gevent is an asynchronous, unblock framework based on libev event loop and greenlet. When a function turn to IO operation, it will be added a callback function and then free CPU to another function. The IO controller will take charge of it, and when finishing the function will be pushed into wait queue. After all functions in stack finish, the function in queue will run one after another from head.
+</p>
+
 ### Load balancing and failover
 <p>We use Nginx to finish load balancing and failover. </p>
 <p>Nginx can make a proxy to dispense requests to our servers. </p>
