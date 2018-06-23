@@ -80,11 +80,12 @@ IP 分数分布: (越高越好)<br/>
 <p>Acquire IP from database. </p>
 <p>Schedule IP to visit website according to API arguments. </p>
 <p>Use IP which score higher first. </p>
+
 ### IP collector 
 This component is based on an open source project on Github[1]. 
  The file structure for this component is shown in the Fig.1.  
  ![Fig. 1 File Structure](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/file_structure.png)
- For the proxy spider, it uses xpath to drag IP proxy information from free IP proxy website.  
+ <br/>For the proxy spider, it uses xpath to drag IP proxy information from free IP proxy website.  
  The content of xpath, the url,
  and some other information are all stored in config.py which is the profile for this part. 
  While running, it creates one thread to crawl target website and fifty threads to test and verify the usability for each IP proxy. 
@@ -102,8 +103,8 @@ This component is based on an open source project on Github[1].
 <p>We use Nginx to finish load balancing and failover. </p>
 <p>Nginx can make a proxy to dispense requests to our servers. </p>
 <p>For example, these pictures are our setting for Nginx.</p>
-!(https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx1.png)
-!(https://raw.githubusercontent.com/YangTianz/Proxy_Platform/blob/master/pic/Nginx2.png)
+![](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx1.png)
+![](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx2.png)
 <p>The first picture means that we make 4 servers for Nginx. The first three servers are running and the forth server is backup. So if the first three servers all fail, then the backup server will receive the request. After servers, here is a ‘fair’ word means that it will dispense requests depend on server response time.
 </p>
 <p>The second picture is that we let Nginx proxy on 0.0.0.0:80. So if someone request 0.0.0.0:80, then it will dispense this request to the server.
@@ -112,13 +113,13 @@ This component is based on an open source project on Github[1].
 * Redis
 <p>To deal with large amounts of IP information, the proxy platform chooses redis as its IP proxy database. Each IP has a score to show its quality and it’s has the format as address:port:type (e.g. 11.22.33.44:80:HTTPS). All the proxy IPs are stored in a zset called ProxyPlatform sort by its score in order to facilitate the use and maintenance of IP. The scheduler can randomly get IP proxy from the database and the tester can check the IP score sequentially.
 </p>
-![Proxy IP in Redis](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/blob/master/pic/redis.png)
+![Proxy IP in Redis](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/redis.png)
 * MySQL
 <p>The proxy platform uses MySQL to store other information about the operations made by users. </p>
 * Table Saves stores the request method, response status code, response header and response time of each request operation. Users can query and get the information of the request they had made before.
-![Request information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/blob/master/pic/request_information.png)
+![Request information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/request_information.png)
 * Table Session stores the information of Session function. It generates a unique 8 characters length string and map it to the specific IP. Users can get the same IP as they used before by the unique string.
-![Session information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/blob/master/pic/session_information.png)
+![Session information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/session_information.png)
 ## Test
 <p>To simulate a environment for high loading, we used 4 computers create 500 threads to request our program. And we used 4 servers to receive requests.</p>
 <p>Because it wasn’t let our server load fully, it only has over 100 requests per second.</p>
