@@ -8,7 +8,7 @@ import re
 """
 count获取ip总数
 batch(start,end)分段获取ip，返回一个IP数组
-decrease(IP) 减分，自动减1，到0抛出
+decrease(IP) 减分，自动减k，到0抛出
 """
 
 class RedisClient(object):
@@ -17,7 +17,7 @@ class RedisClient(object):
 
     def random(self,k):
         """
-        随机获取有效代理，首先尝试获取最高分数代理，如果不存在，按照排名获取，否则异常
+        随机获取k个有效代理，按照排名获取，否则异常
         :return: 随机代理
         """
         result = self.db.zrevrange(REDIS_KEY, 10, 100)
@@ -50,14 +50,15 @@ class RedisClient(object):
 
     def decrease(self, IP, k):
         """
-        代理值减一分，小于最小值则删除
-        :param proxy: 代理
+        代理值减分，小于最小值则删除
+        :param IP: 代理ip
+        :param k: 分数
         :return: 修改后的代理分数
         """
         proxy = self.translatetoproxy(IP)
         score = self.db.zscore(REDIS_KEY, proxy)
         if score and score - k > MIN_SCORE:
-            print('代理', proxy, '当前分数', score, '减 1')
+            print('代理', proxy, '当前分数', score, '减',k)
             return self.db.zincrby(REDIS_KEY, proxy, -k)
         else:
             print('代理', proxy, '当前分数', score, '移除')
@@ -75,7 +76,7 @@ class RedisClient(object):
     def exists(self, IP):
         """
         判断是否存在
-        :param proxy: 代理
+        :param ip: 代理
         :return: 是否存在
         """
         proxy = self.translatetoproxy(IP)
@@ -84,7 +85,7 @@ class RedisClient(object):
     def max(self, IP):
         """
         将代理设置为MAX_SCORE
-        :param proxy: 代理
+        :param ip: 代理
         :return: 设置结果
         """
         proxy = self.translatetoproxy(IP)
@@ -99,6 +100,10 @@ class RedisClient(object):
         return self.db.zcard(REDIS_KEY)
 
     def ipstatus(self):
+        """
+        获取状态
+        :return: 状态字符串
+        """
         result = "当前 IP 总数："+ str(self.count()) + "\n"
         result += "IP 分数分布: (越高越好)\n"
         result += "1 ~ 19:  " + str(self.db.zcount(REDIS_KEY,1,19)) + "\n"
