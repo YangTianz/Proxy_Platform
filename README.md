@@ -72,15 +72,15 @@ IP 分数分布: (越高越好)<br/>
 ## Principle
 ### Web framework
 * Flask
-!(https://github.com/YangTianz/Proxy_Platform/blob/master/pic/web1.png)
-!(https://github.com/YangTianz/Proxy_Platform/blob/master/pic/web2.png)
+!(https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/web1.png)
+!(https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/web2.png)
 ### IP scheduler
 * Path: /src/Schdule
 * Function: 
 <p>Acquire IP from database. </p>
 <p>Schedule IP to visit website according to API arguments. </p>
 <p>Use IP which score higher first. </p>
-### IP collector <br/>
+### IP collector 
 This component is based on an open source project on Github[1]. 
  The file structure for this component is shown in the Fig.1.  
  ![Fig. 1 File Structure](https://github.com/YangTianz/Proxy_Platform/blob/master/pic/file_structure.png)
