@@ -92,19 +92,20 @@ This component is based on an open source project on Github[1].
  All the usable IP proxy will be added to database. 
  The architecture of this part is shown in Fig.2. 
 ![Fig. 2 Component Architecture](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Component_Architecture.png) 
- Because of network fluctuations and the limitation of visiting on some IP proxy website,
+ <br/>Because of network fluctuations and the limitation of visiting on some IP proxy website,
  this spider need to resend HTTP request to the target website once the HTTP response doesn’t be received after TIMEOUT which makes this spider a little bit slow.
  Some proxy websites use anti-crawl mechanism which means running proxy spider frequently will get IP proxies less and less.  
  Since they are all free IP proxies, it still can’t get that much usable IP proxies.  
- The running output on console is shown in Fig.3. 
+ The running output on console is shown in Fig.3. <br/>
 ![Fig. 3 running output](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/running_output.png)
 ### IP calibrator
 ### Load balancing and failover
 <p>We use Nginx to finish load balancing and failover. </p>
 <p>Nginx can make a proxy to dispense requests to our servers. </p>
 <p>For example, these pictures are our setting for Nginx.</p>
-![](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx1.png)
-![](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx2.png)
+
+![1](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx1.png)
+![1](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/Nginx2.png)
 <p>The first picture means that we make 4 servers for Nginx. The first three servers are running and the forth server is backup. So if the first three servers all fail, then the backup server will receive the request. After servers, here is a ‘fair’ word means that it will dispense requests depend on server response time.
 </p>
 <p>The second picture is that we let Nginx proxy on 0.0.0.0:80. So if someone request 0.0.0.0:80, then it will dispense this request to the server.
@@ -118,6 +119,7 @@ This component is based on an open source project on Github[1].
 ![Proxy IP in Redis](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/redis.png)
 * MySQL
 <p>The proxy platform uses MySQL to store other information about the operations made by users. </p>
+
 * Table Saves stores the request method, response status code, response header and response time of each request operation. Users can query and get the information of the request they had made before.
 
 ![Request information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/request_information.png)
