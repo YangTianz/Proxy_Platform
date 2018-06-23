@@ -119,9 +119,12 @@ This component is based on an open source project on Github[1].
 * MySQL
 <p>The proxy platform uses MySQL to store other information about the operations made by users. </p>
 * Table Saves stores the request method, response status code, response header and response time of each request operation. Users can query and get the information of the request they had made before.
+
 ![Request information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/request_information.png)
 * Table Session stores the information of Session function. It generates a unique 8 characters length string and map it to the specific IP. Users can get the same IP as they used before by the unique string.
+
 ![Session information in MySQL](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/session_information.png)
+
 ## Test
 <p>To simulate a environment for high loading, we used 4 computers create 500 threads to request our program. And we used 4 servers to receive requests.</p>
 <p>Because it wasn’t let our server load fully, it only has over 100 requests per second.</p>
