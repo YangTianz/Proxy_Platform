@@ -109,10 +109,12 @@ This component is based on an open source project on Github[1].
 </p>
 <p>The second picture is that we let Nginx proxy on 0.0.0.0:80. So if someone request 0.0.0.0:80, then it will dispense this request to the server.
 </p>
+
 ### Database
 * Redis
 <p>To deal with large amounts of IP information, the proxy platform chooses redis as its IP proxy database. Each IP has a score to show its quality and it’s has the format as address:port:type (e.g. 11.22.33.44:80:HTTPS). All the proxy IPs are stored in a zset called ProxyPlatform sort by its score in order to facilitate the use and maintenance of IP. The scheduler can randomly get IP proxy from the database and the tester can check the IP score sequentially.
 </p>
+
 ![Proxy IP in Redis](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/redis.png)
 * MySQL
 <p>The proxy platform uses MySQL to store other information about the operations made by users. </p>
@@ -124,6 +126,7 @@ This component is based on an open source project on Github[1].
 <p>To simulate a environment for high loading, we used 4 computers create 500 threads to request our program. And we used 4 servers to receive requests.</p>
 <p>Because it wasn’t let our server load fully, it only has over 100 requests per second.</p>
 <strong>If you are interested, you can test our program and tell us.</strong>
+
 ## Reference
 * ![proxyspider](https://github.com/zhangchenchen/proxyspider)
 * ![haipproxy](https://github.com/SpiderClub/haipproxy)
