@@ -1,13 +1,15 @@
-
 from flask import Flask, request as request1
 from Schedule.Scheduler import *
 from  proxy_spider.proxyspider import run_spider
-from Utils import DBUtils
 from Utils import redisdb
+import config
 
 
 
 app=Flask(__name__)
+host=config.host
+port=config.port
+spider=config.spider
 
 @app.route('/api/')
 def listener():
@@ -70,7 +72,7 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
             if (number == 0):
                 number = number + 1
                 continue
-            response_list.append(i['response'])
+            response_list.append(i)
             number = number + 1
         Result = {"response": response_list}
     return json.dumps(Result)
@@ -79,7 +81,8 @@ def get_result(url,headers,method,data,time_max,time_delay,request_con,session,t
 
 
 if __name__ == '__main__':
-    #run_spider()  # 启动爬虫爬可用IP
-    app.run(host='0.0.0.0', port=80)
+    if(spider):
+        run_spider()  # 启动爬虫爬可用IP
+    app.run(host=host, port=port)
 
 

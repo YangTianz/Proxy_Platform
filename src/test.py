@@ -10,7 +10,7 @@ x=[0]
 mutex=threading.Lock()
 
 def thread(url):
-    for i in range(10):
+    for i in range(5):
         response = request.urlopen(url)
         text = response.read()
     global x,mutex
@@ -23,6 +23,9 @@ def thread(url):
 
 if __name__ == '__main__' :
 
+
+
+
             url=[]
             url.append("https://www.etymonline.com/word/jack")
             url.append("https://www.baidu.com")
@@ -32,20 +35,18 @@ if __name__ == '__main__' :
             url.append("https://www.douyu.com")
             url.append("https://sakai.sustc.edu.cn")
             url.append("https://github.com/")
-            url.append("https://weibo.com/")
 
-            myurl = "http://0.0.0.0/api/?url="
+            myurl = "http://localhost/api/?url="
             list1=[]
-            for i in range(150):
+            for i in range(1000):
                 r=int(random.random()*len(url))
-                aurl=url[r]
+                aurl=myurl+url[r]
                 t=threading.Thread(target=thread,args=(aurl,))
                 list1.append(t)
             for i in list1:
                 i.start()
             for i in list1:
                 i.join()
-
 
 
 
