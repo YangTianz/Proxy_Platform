@@ -71,9 +71,9 @@ IP 分数分布: (越高越好)<br/>
 - {“error”:[error message]}
 ## Principle
 ### Web framework
-* Flask
-!(https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/web1.png)
-!(https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/web2.png)
+* Flask<br/>
+![](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/web1.png)
+![](https://raw.githubusercontent.com/YangTianz/Proxy_Platform/master/pic/web2.png)
 ### IP scheduler
 * Path: /src/Schdule
 * Function: 
